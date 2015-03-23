@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
-using NLog.LogReceiverService;
 using TvTamer.Core;
 
 namespace TvCleaner

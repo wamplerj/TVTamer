@@ -45,10 +45,12 @@ namespace TvTamer.Core
             try
             {
                 File.Delete(filePath);
+                _logger.Info("Deleted file from source at : {0}", filePath);
             }
             catch (DirectoryNotFoundException dir)
             {
                 //todo
+                _logger.Error("Could not delete file at ");
             }
             catch (IOException io)
             {
