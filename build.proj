@@ -1,0 +1,14 @@
+<Project DefaultTargets="Compile" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    
+	<Target Name="Compile">
+		<Message Text="Compiling Solution" />
+	    <MSBuild Projects="TVTamer.sln" Targets="Build" />
+	</Target>
+
+	<Target Name="RunTests">
+
+
+	</Target>
+
+
+</Project>

@@ -13,6 +13,5 @@ namespace TvTamer.Core
         public int Season { get; set; }
         public int EpisodeNumber { get; set; }
         public string FileName { get; set; }
-
     }
 }

@@ -53,9 +53,6 @@ namespace TvTamer.Core
 
         public void DeleteSourceFile(string filePath)
         {
-            Console.WriteLine("Deleting file from source at : {0}\r\n", filePath);
-
-            if (dryRun) return;
 
             try
             {
@@ -63,22 +60,20 @@ namespace TvTamer.Core
                 var fileInfo = new FileInfo(filePath);
                 if (fileInfo.DirectoryName == _sourceFolder)
                 {
-
+                    fileInfo.Delete();
+                    _logger.Info("Deleted file from source at: {0}\r\n", filePath);
                 }
                 else
                 {
-                    var folder = filePath.Substring(18); //Source.length
-                    var folderParts = folder.Split('\\');
-
+                    var folderParts = filePath.Substring(_sourceFolder.Length).Split('\\');
                     var rootFolder = _sourceFolder + folderParts[0];
 
-                    if (Directory.Exists(rootFolder))
-                        Directory.Delete(rootFolder, true);
+                    if (!Directory.Exists(rootFolder)) return;
+
+                    Directory.Delete(rootFolder, true);
+                    _logger.Info("Deleted folder from source at: {0}\r\n", rootFolder);
                 }
 
-
-                File.Delete(filePath);
-                _logger.Info("Deleted file from source at : {0}\r\n", filePath);
             }
             catch (UnauthorizedAccessException auth)
             {
