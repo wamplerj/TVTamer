@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace TvTamer.Core
@@ -22,6 +18,8 @@ namespace TvTamer.Core
 
         public static TvEpisode GetTvEpisode(string fileName)
         {
+
+            var fullFileName = fileName;
             var regex = new Regex(episodePattern2, RegexOptions.IgnoreCase);
 
             var fileNameParts = fileName.Split('\\');
@@ -32,9 +30,7 @@ namespace TvTamer.Core
             if (!match.Success) return null;
 
             var seriesName = match.Groups["SeriesName"].Value;
-            seriesName = seriesName.Replace(".", " ");
-            seriesName = seriesName.Replace("'", "");
-            seriesName = seriesName.Trim();
+            seriesName = seriesName.Replace(".", " ").Replace("'", "").Trim();
 
             var seasonNumber = Convert.ToInt32(match.Groups["SeasonNumber"].Value);
 
@@ -45,7 +41,7 @@ namespace TvTamer.Core
 
             var episodeNumber = Convert.ToInt32(match.Groups["EpisodeNumber"].Captures[0].Value);
 
-            return new TvEpisode() {EpisodeNumber = episodeNumber, Season = seasonNumber, SeriesName = seriesName, FileName = fileName};
+            return new TvEpisode() {EpisodeNumber = episodeNumber, Season = seasonNumber, SeriesName = seriesName, FileName = fullFileName};
 
         }
 

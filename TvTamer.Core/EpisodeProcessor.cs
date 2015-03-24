@@ -8,29 +8,44 @@ namespace TvTamer.Core
 {
     public class EpisodeProcessor
     {
+        private readonly string _sourceFolder;
+        private readonly string _destinationFolder;
+
+        public EpisodeProcessor(string sourceFolder, string destinationFolder)
+        {
+            _sourceFolder = sourceFolder;
+            _destinationFolder = destinationFolder;
+        }
+
+        private readonly Dictionary<string, string> _alternateSeriesNames = new Dictionary<string, string>()
+        {
+            {"Marvels Agents of S H I E L D","Marvels Agents of SHIELD"},
+        };
+
         private Logger _logger = LogManager.GetLogger("log");
+        private readonly string[] _extensions = { ".mkv", ".mp4", ".m4v", ".avi", ".mpg", ".mpeg", ".wmv" };
 
-        private readonly string tvLibraryFolder = @"c:\temp\library\";
-        private readonly string[] extensions = { ".mkv", ".mp4", ".m4v", ".avi", ".mpg", ".mpeg", ".wmv" };
-        
-        private readonly bool dryRun = true;
+        private readonly bool dryRun = false;
 
-        public IEnumerable<TvEpisode> GetTvEpisodeFiles(string folder)
+        public IEnumerable<TvEpisode> GetTvEpisodeFiles()
         {
 
-            var files = Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories).Where(f => extensions.Contains(new FileInfo(f).Extension.ToLower()));
+            var files = Directory.EnumerateFiles(_sourceFolder, "*", SearchOption.AllDirectories).Where(f => _extensions.Contains(new FileInfo(f).Extension.ToLower()));
             return TvEpisodeFilter.GetEpisodes(files);
         }
 
-        public bool DestinationFileExists(TvEpisode episode, string folder)
+        public bool DestinationFileExists(TvEpisode episode)
         {
 
-            var destinationFolder = string.Format("{0}\\{1}\\Season {2:D2}\\", folder, episode.SeriesName, episode.Season);
+            if (_alternateSeriesNames.ContainsKey(episode.SeriesName))
+                episode.SeriesName = _alternateSeriesNames[episode.SeriesName];
 
-            if (!Directory.Exists(destinationFolder)) return false;
+            var seriesDestinationFolder = string.Format("{0}\\{1}\\Season {2:D2}\\", _destinationFolder, episode.SeriesName, episode.Season);
 
-            var episodeSearchPattern = string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber);
-            var files = Directory.GetFiles(destinationFolder, episodeSearchPattern, SearchOption.TopDirectoryOnly);
+            if (!Directory.Exists(seriesDestinationFolder)) return false;
+
+            var episodeSearchPattern = string.Format("S{0:D2}E{1:D2}*", episode.Season, episode.EpisodeNumber);
+            var files = Directory.GetFiles(seriesDestinationFolder, episodeSearchPattern, SearchOption.TopDirectoryOnly);
 
             return files.Length > 0;
 
@@ -38,14 +53,36 @@ namespace TvTamer.Core
 
         public void DeleteSourceFile(string filePath)
         {
-            Console.WriteLine("Deleting file from source at : {0}", filePath);
+            Console.WriteLine("Deleting file from source at : {0}\r\n", filePath);
 
             if (dryRun) return;
 
             try
             {
+
+                var fileInfo = new FileInfo(filePath);
+                if (fileInfo.DirectoryName == _sourceFolder)
+                {
+
+                }
+                else
+                {
+                    var folder = filePath.Substring(18); //Source.length
+                    var folderParts = folder.Split('\\');
+
+                    var rootFolder = _sourceFolder + folderParts[0];
+
+                    if (Directory.Exists(rootFolder))
+                        Directory.Delete(rootFolder, true);
+                }
+
+
                 File.Delete(filePath);
-                _logger.Info("Deleted file from source at : {0}", filePath);
+                _logger.Info("Deleted file from source at : {0}\r\n", filePath);
+            }
+            catch (UnauthorizedAccessException auth)
+            {
+                _logger.Error("Could not delete file at ");
             }
             catch (DirectoryNotFoundException dir)
             {

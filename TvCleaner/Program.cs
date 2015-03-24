@@ -31,12 +31,12 @@ namespace TvCleaner
                 return -2;
             }
 
-            var processor = new EpisodeProcessor();
-            var episodes = processor.GetTvEpisodeFiles(source);
+            var processor = new EpisodeProcessor(source, destination);
+            var episodes = processor.GetTvEpisodeFiles();
 
             foreach (var episode in episodes)
             {
-                if (processor.DestinationFileExists(episode, destination))
+                if (processor.DestinationFileExists(episode))
                 {
                     processor.DeleteSourceFile(episode.FileName);
                 }

@@ -17,8 +17,8 @@ namespace TvTamer.Core.IntegrationTests
 
             var processingFolder = @"c:\temp\TV_Source\";
 
-            var processor = new EpisodeProcessor();
-            var files = processor.GetTvEpisodeFiles(processingFolder).ToList();
+            var processor = new EpisodeProcessor(processingFolder, "");
+            var files = processor.GetTvEpisodeFiles().ToList();
 
             Assert.That(files, Is.Not.Null);
 
