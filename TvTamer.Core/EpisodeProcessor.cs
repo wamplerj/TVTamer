@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NLog;
+using TvTamer.Core.Models;
 
 namespace TvTamer.Core
 {
@@ -58,7 +59,7 @@ namespace TvTamer.Core
             {
 
                 var fileInfo = new FileInfo(filePath);
-                if (fileInfo.DirectoryName == _sourceFolder)
+                if (fileInfo.DirectoryName == Path.GetDirectoryName(_sourceFolder))
                 {
                     fileInfo.Delete();
                     _logger.Info("Deleted file from source at: {0}\r\n", filePath);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using TvTamer.Core.Models;
 
 namespace TvTamer.Core
 {
@@ -9,7 +10,6 @@ namespace TvTamer.Core
 
         private readonly static string episodePattern = @"[Ss](?<season>\d{1,2})[Ee](?<episode>\d{1,2})";
         private readonly static string episodePattern2 = @"(?:[^\\]\\)*(?<SeriesName>.+?) *S?(?<SeasonNumber>[0-9]+)(?:[ .XE]+(?<EpisodeNumber>[0-9]+))";
-
 
         public static string GetSeriesName(string fileName)
         {
@@ -49,8 +49,11 @@ namespace TvTamer.Core
         {
             foreach(var source in sources)
             {
-                if (Regex.IsMatch(source, episodePattern))
-                    yield return GetTvEpisode(source);
+                if (!Regex.IsMatch(source, episodePattern)) continue;
+
+                var episode = GetTvEpisode(source);
+                if (episode != null)
+                    yield return episode;
             }
         }
 

@@ -35,6 +35,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,9 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EpisodeProcessor.cs" />
-    <Compile Include="TvEpisode.cs" />
+    <Compile Include="Models\TvSeries.cs" />
+    <Compile Include="Models\TvEpisode.cs" />
     <Compile Include="TvEpisodeFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TvDbSearchService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

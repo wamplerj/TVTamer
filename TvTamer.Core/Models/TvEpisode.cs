@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TvTamer.Core
+﻿namespace TvTamer.Core.Models
 {
     public class TvEpisode
     {
