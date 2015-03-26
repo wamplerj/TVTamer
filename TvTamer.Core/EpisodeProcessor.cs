@@ -12,12 +12,6 @@ namespace TvTamer.Core
         private readonly string _sourceFolder;
         private readonly string _destinationFolder;
 
-        public EpisodeProcessor(string sourceFolder, string destinationFolder)
-        {
-            _sourceFolder = sourceFolder;
-            _destinationFolder = destinationFolder;
-        }
-
         private readonly Dictionary<string, string> _alternateSeriesNames = new Dictionary<string, string>()
         {
             {"Marvels Agents of S H I E L D","Marvels Agents of SHIELD"},
@@ -26,12 +20,19 @@ namespace TvTamer.Core
         private Logger _logger = LogManager.GetLogger("log");
         private readonly string[] _extensions = { ".mkv", ".mp4", ".m4v", ".avi", ".mpg", ".mpeg", ".wmv" };
 
-        private readonly bool dryRun = false;
+        private readonly bool dryRun = false;  //TODO this should come via commandline argument
+
+        public EpisodeProcessor(string sourceFolder, string destinationFolder)
+        {
+            _sourceFolder = sourceFolder;
+            _destinationFolder = destinationFolder;
+        }
 
         public IEnumerable<TvEpisode> GetTvEpisodeFiles()
         {
 
-            var files = Directory.EnumerateFiles(_sourceFolder, "*", SearchOption.AllDirectories).Where(f => _extensions.Contains(new FileInfo(f).Extension.ToLower()));
+            var files = Directory.EnumerateFiles(_sourceFolder, "*", SearchOption.AllDirectories)
+                .Where(f => _extensions.Contains(new FileInfo(f).Extension.ToLower()) && !f.Contains("sample"));
             return TvEpisodeFilter.GetEpisodes(files);
         }
 

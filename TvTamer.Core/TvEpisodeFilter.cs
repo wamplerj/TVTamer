@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TvTamer.Core.Models;
 
@@ -27,18 +28,21 @@ namespace TvTamer.Core
 
             var match = regex.Match(fileName);
 
-            if (!match.Success) return null;
+            if (!match.Success)
+            {
+                //If the file does not match the SXXExx naming pattern, then test its parent directory
+                if (fileNameParts.Length >= 2)
+                {
+                    return GetTvEpisode(fileNameParts[fileNameParts.Length - 2]);
+                }
+
+                return null;
+            }
 
             var seriesName = match.Groups["SeriesName"].Value;
             seriesName = seriesName.Replace(".", " ").Replace("'", "").Trim();
 
             var seasonNumber = Convert.ToInt32(match.Groups["SeasonNumber"].Value);
-
-            if (match.Groups["EpisodeNumber"].Captures.Count > 1)
-            {
-                //TODO Something weird
-            }
-
             var episodeNumber = Convert.ToInt32(match.Groups["EpisodeNumber"].Captures[0].Value);
 
             return new TvEpisode() {EpisodeNumber = episodeNumber, Season = seasonNumber, SeriesName = seriesName, FileName = fullFileName};
