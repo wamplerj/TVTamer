@@ -31,6 +31,9 @@ namespace TvTamer.Core.IntegrationTests
 
             Assert.That(result, Is.Not.Null);
 
+            var season2Count = result.Episodes.Count(x => x.Season == 2);
+            Assert.That(season2Count, Is.EqualTo(22));
+
         }
     }
 }

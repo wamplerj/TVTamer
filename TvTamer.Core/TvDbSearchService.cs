@@ -76,6 +76,29 @@ namespace TvTamer.Core
                     Summary = overview
                 };
 
+                var episodeNodes = xmlDoc.SelectNodes("Data/Episode");
+
+                if (episodeNodes != null)
+                {
+
+                    foreach (XmlNode node in episodeNodes)
+                    {
+
+                        var episode = new TvEpisode();
+                        episode.EpisodeNumber = Convert.ToInt32(node["EpisodeNumber"].InnerText);
+                        episode.Season = Convert.ToInt32(node["SeasonNumber"].InnerText);
+                        episode.Title = node["EpisodeName"].InnerText;
+                        episode.FirstAired = Convert.ToDateTime(node["FirstAired"].InnerText);
+
+                        overview = node["Overview"]?.InnerText ?? string.Empty;
+                        episode.Summary = overview;
+
+                        tvSeries.Episodes.Add(episode);
+                    }
+                }
+
+
+
                 File.Delete(temporaryFilePath);
                 Directory.Delete(extractFolder, recursive:true);
             }

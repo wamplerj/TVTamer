@@ -1,4 +1,6 @@
-﻿namespace TvTamer.Core.Models
+﻿using System;
+
+namespace TvTamer.Core.Models
 {
     public class TvEpisode
     {
@@ -7,5 +9,7 @@
         public int Season { get; set; }
         public int EpisodeNumber { get; set; }
         public string FileName { get; set; }
+        public string Summary { get; set; }
+        public DateTime FirstAired { get; set; }
     }
 }

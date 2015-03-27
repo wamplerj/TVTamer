@@ -11,7 +11,7 @@ namespace TvCleaner
     class Program
     {
 
-        private Logger _logger = LogManager.GetLogger("log");
+        private static Logger _logger = LogManager.GetLogger("log");
         private static string _sourceFolder;
         private static string _destinationFolder;
 
@@ -39,6 +39,7 @@ namespace TvCleaner
             var processor = new EpisodeProcessor(_sourceFolder, _destinationFolder);
             var episodes = processor.GetTvEpisodeFiles();
 
+            _logger.Info("Found {0} files in {1}", episodes.Count(), _sourceFolder);
             Console.WriteLine("Found {0} files in {1}", episodes.Count(), _sourceFolder);
             Console.WriteLine("===========================================================================");
             DisplayFiles(episodes.Select(e => e.FileName).ToList());
@@ -70,6 +71,7 @@ namespace TvCleaner
                     fileName = parts[0];
                 }
                 Console.WriteLine(fileName);
+                _logger.Info(fileName);
             }
         }
     }
