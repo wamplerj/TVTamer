@@ -33,7 +33,7 @@ namespace TvTamer.Core
 
                 var tvSeries = new TvSeries()
                 {
-                    Id = node["id"].InnerText,
+                    SeriesId = node["id"].InnerText,
                     Name = node["SeriesName"].InnerText,
                     FirstAired = Convert.ToDateTime(node["FirstAired"].InnerText),
                     Summary = overview
@@ -69,7 +69,7 @@ namespace TvTamer.Core
 
                 tvSeries = new TvSeries()
                 {
-                    Id = seriesNode["id"].InnerText,
+                    SeriesId = seriesNode["id"].InnerText,
                     Name = seriesNode["SeriesName"].InnerText,
                     FirstAired = Convert.ToDateTime(seriesNode["FirstAired"].InnerText),
                     Status = seriesNode["Status"].InnerText,
