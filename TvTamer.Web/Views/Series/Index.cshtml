@@ -1,0 +1,18 @@
+﻿@using TvTamer.Core.Models
+
+@model  IEnumerable<TvSeries>
+@{
+    ViewBag.Title = "TV Series";
+}
+
+<ul>
+    @foreach (var series in Model)
+    {
+        <li>@series.Name</li>
+    }
+</ul>
+
+<p>
+    <a href="/series/add">Add New Series</a>
+</p>
+

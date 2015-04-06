@@ -11,10 +11,16 @@ using System.IO.Compression;
 
 namespace TvTamer.Core
 {
-    public class TvDbSearchService
+    public interface ITvSearchService
+    {
+        IEnumerable<TvSeries> FindTvShow(string name);
+        TvSeries GetTvSeries(string id);
+    }
+
+    public class TvDbSearchService : ITvSearchService
     {
 
-        private const string _TvDbApiKey = "606A01BB48D22619"; 
+        private const string _TvDbApiKey = "606A01BB48D22619";
 
         public IEnumerable<TvSeries> FindTvShow(string name)
         {
@@ -28,6 +34,7 @@ namespace TvTamer.Core
 
             foreach (XmlNode node in xmlDoc.SelectNodes("Data/Series"))
             {
+                if (node["FirstAired"] == null) continue;
 
                 var overview = node["Overview"]?.InnerText ?? string.Empty;
 
@@ -43,6 +50,11 @@ namespace TvTamer.Core
 
             return series;
 
+        }
+
+        private List<string> GetGenres(string delmitedGenres)
+        {
+            return delmitedGenres.Split('|').ToList();
         }
 
         public TvSeries GetTvSeries(string id)
@@ -73,8 +85,23 @@ namespace TvTamer.Core
                     Name = seriesNode["SeriesName"].InnerText,
                     FirstAired = Convert.ToDateTime(seriesNode["FirstAired"].InnerText),
                     Status = seriesNode["Status"].InnerText,
-                    Summary = overview
+                    Summary = overview,
+                    AirsTimeOfDay = seriesNode["Airs_Time"]?.InnerText ?? string.Empty,
+                    Network = seriesNode["Network"]?.InnerText ?? string.Empty,
+                    Rating = seriesNode["ContentRating"]?.InnerText ?? string.Empty,
                 };
+
+                if (seriesNode["Airs_DayOfWeek"] != null)
+                {
+                    DayOfWeek airDate;
+                    Enum.TryParse<DayOfWeek>(seriesNode["Airs_DayOfWeek"].InnerText, out airDate);
+                    tvSeries.AirsDayOfWeek = airDate;
+
+                }
+
+                if (seriesNode["Genre"] != null)
+                    tvSeries.Genres = GetGenres(seriesNode["Genre"].InnerText);
+
 
                 var episodeNodes = xmlDoc.SelectNodes("Data/Episode");
 
@@ -96,8 +123,6 @@ namespace TvTamer.Core
                         tvSeries.Episodes.Add(episode);
                     }
                 }
-
-
 
                 File.Delete(temporaryFilePath);
                 Directory.Delete(extractFolder, recursive:true);

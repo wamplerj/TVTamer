@@ -15,9 +15,14 @@ namespace TvTamer.Core.Models
         public string SeriesId { get; set; }
         public string Name { get; set; }
         public DateTime FirstAired { get; set; }
+        public DayOfWeek AirsDayOfWeek { get; set; }
+        public string AirsTimeOfDay { get; set; }
+        public string Network { get; set; }
         public string Summary { get; set; }
         public string Status { get; set; }
+        public string Rating { get; set; }
         public List<TvEpisode> Episodes { get; set; } = new List<TvEpisode>();
+        public List<string>  Genres { get; set; }
     }
 
     public class TvSeriesMap : EntityTypeConfiguration<TvSeries>

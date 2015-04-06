@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
 using TvTamer.Core.Models;
 
 namespace TvTamer.Core.Persistance

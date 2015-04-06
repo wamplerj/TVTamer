@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvTamer.Core.IntegrationTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvCleaner", "TvCleaner\TvCleaner.csproj", "{96A2DC4A-212A-49D9-9BE8-FB58BA384009}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvTamer.Web", "TvTamer.Web\TvTamer.Web.csproj", "{48FE70C6-AD37-4774-96AC-1986D0F27952}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{96A2DC4A-212A-49D9-9BE8-FB58BA384009}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96A2DC4A-212A-49D9-9BE8-FB58BA384009}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96A2DC4A-212A-49D9-9BE8-FB58BA384009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48FE70C6-AD37-4774-96AC-1986D0F27952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48FE70C6-AD37-4774-96AC-1986D0F27952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48FE70C6-AD37-4774-96AC-1986D0F27952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48FE70C6-AD37-4774-96AC-1986D0F27952}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
