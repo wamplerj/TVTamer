@@ -55,6 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EpisodeProcessor.cs" />
+    <Compile Include="FileSystem\Directory.cs" />
+    <Compile Include="FileSystem\File.cs" />
     <Compile Include="Models\TvSeries.cs" />
     <Compile Include="Models\TvEpisode.cs" />
     <Compile Include="Persistance\TvContext.cs" />

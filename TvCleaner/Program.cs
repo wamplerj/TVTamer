@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+using Autofac;
+using CommandLine;
 using NLog;
 using TvTamer.Core;
 
@@ -12,67 +11,36 @@ namespace TvCleaner
     {
 
         private static Logger _logger = LogManager.GetLogger("log");
-        private static string _sourceFolder;
-        private static string _destinationFolder;
+        private static Arguments _arguments = new Arguments();
 
         static int Main(string[] args)
         {
+            LoadArguments(args);
 
-            //Scan source directory for matching files
-
-            if (args.Length != 2)
-            {
-                Console.WriteLine("Run with 2 arguments, the paths to source and destination.");
-                Console.WriteLine("\tex. tvcleaner.exe c:\\source\\ c:\\destination\\");
-                return -1;
-            }
-
-            _sourceFolder = args[0];
-            _destinationFolder = args[1];
-
-            if (!Directory.Exists(_sourceFolder))
-            {
-                Console.WriteLine("Source folder: {0} does not exist on disk");
-                return -2;
-            }
-
-            var processor = new EpisodeProcessor(_sourceFolder, _destinationFolder);
-            var episodes = processor.GetTvEpisodeFiles();
-
-            _logger.Info("Found {0} files in {1}", episodes.Count(), _sourceFolder);
-            Console.WriteLine("Found {0} files in {1}", episodes.Count(), _sourceFolder);
-            Console.WriteLine("===========================================================================");
-            DisplayFiles(episodes.Select(e => e.FileName).ToList());
-
-            var deletedFiles = new List<string>();
-            foreach (var episode in episodes)
-            {
-                if (!processor.DestinationFileExists(episode)) continue;
-
-                processor.DeleteSourceFile(episode.FileName);
-                deletedFiles.Add(episode.FileName);
-            }
-
-            Console.WriteLine("\r\n\r\nDeleted {0} files from {1}", deletedFiles.Count(), _sourceFolder);
-            Console.WriteLine("===========================================================================");
-            DisplayFiles(deletedFiles);
+            var processor = new EpisodeProcessor(_arguments.SourceFolder, _arguments.DestinationFolder);
+            processor.ProcessDownloadedEpisodes();
 
             return 0;
         }
 
-        private static void DisplayFiles(IEnumerable<string> files)
+        private static void LoadArguments(string[] args)
         {
-            foreach (var file in files)
+
+            Parser.Default.ParseArguments(args, _arguments);
+
+            if (!Directory.Exists(_arguments.SourceFolder))
             {
-                var fileName = file.Substring(_sourceFolder.Length);
-                if (fileName.Length > 70)
-                {
-                    var parts = fileName.Split('\\');
-                    fileName = parts[0];
-                }
-                Console.WriteLine(fileName);
-                _logger.Info(fileName);
+                _logger.Info("Source folder: {0} does not exist on disk", _arguments.SourceFolder);
+                Environment.Exit(-2);
             }
+
+            if (!Directory.Exists(_arguments.DestinationFolder))
+            {
+                _logger.Info("Destination folder: {0} does not exist on disk", _arguments.DestinationFolder);
+                Environment.Exit(-2);
+            }
+
+
         }
     }
 }
