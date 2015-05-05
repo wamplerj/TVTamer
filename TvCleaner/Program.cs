@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Data.Entity;
 using System.IO;
-using Autofac;
 using CommandLine;
 using NLog;
 using TvTamer.Core;
+using TvTamer.Core.Persistance;
 
 namespace TvCleaner
 {
@@ -15,12 +16,22 @@ namespace TvCleaner
 
         static int Main(string[] args)
         {
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<TvContext>());
             LoadArguments(args);
+
+            UpdateTvDatabase();
 
             var processor = new EpisodeProcessor(_arguments.SourceFolder, _arguments.DestinationFolder);
             processor.ProcessDownloadedEpisodes();
 
             return 0;
+        }
+
+        private static void UpdateTvDatabase()
+        {
+            var updater = new DatabaseUpdater(new TvDbSearchService(), new TvContext());
+            updater.Update();
+
         }
 
         private static void LoadArguments(string[] args)

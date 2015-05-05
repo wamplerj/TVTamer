@@ -88,7 +88,9 @@ namespace TvTamer.Core
 
             //TODO Look up episode name from DB
             var tvSeries =
-                context.TvSeries.Include(e => e.Episodes).First(s => s.Name.ToLower() == episode.SeriesName.ToLower());
+                context.TvSeries.Include(e => e.Episodes).FirstOrDefault(s => s.Name.ToLower() == episode.SeriesName.ToLower());
+
+            if (tvSeries == null) return;
 
             var episodeName =
                 tvSeries.Episodes.Find(

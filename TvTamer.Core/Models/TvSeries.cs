@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Security.Policy;
@@ -21,6 +23,7 @@ namespace TvTamer.Core.Models
         public string Summary { get; set; }
         public string Status { get; set; }
         public string Rating { get; set; }
+        public DateTime LastUpdated { get; set; }
         public List<TvEpisode> Episodes { get; set; } = new List<TvEpisode>();
         public List<string>  Genres { get; set; }
     }
@@ -31,10 +34,11 @@ namespace TvTamer.Core.Models
         public TvSeriesMap()
         {
             this.HasKey(t => t.Id);
-            this.Property(t => t.SeriesId).HasMaxLength(50).IsRequired();
+            this.Property(t => t.SeriesId).HasMaxLength(50).IsRequired()
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName,new IndexAnnotation(new IndexAttribute("IX_SeriesId", 1) { IsUnique = true }));
             this.Property(t => t.Name).HasMaxLength(255).IsRequired();
             this.Property(t => t.FirstAired).IsRequired();
-            //this.Property(t => t.IsVisible).IsRequired();
+            this.Property(t => t.LastUpdated).IsRequired();
 
             HasMany(c => c.Episodes);
         }

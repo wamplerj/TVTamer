@@ -2,6 +2,7 @@
 using TvTamer.Core;
 using TvTamer.Core.Persistance;
 using System.Web.Mvc;
+using System.IO;
 
 namespace TvTamer.Web.Controllers
 {
@@ -44,6 +45,37 @@ namespace TvTamer.Web.Controllers
 
             var context = new TvContext();
             context.TvSeries.Add(series);
+            context.SaveChanges();
+
+            return RedirectToAction("Index");
+
+        }
+
+        [HttpPost]
+        public ActionResult ImportDirectory()
+        {
+
+            var seriesFolders = Directory.GetDirectories(@"\\wampler-server\Storage\Media\TV");
+            var context = new TvContext();
+
+            foreach (var seriesFolder in seriesFolders)
+            {
+
+                var showName = seriesFolder.Split('\\').Last();
+
+                if (showName.Contains('\\')) continue;
+
+                var tvShows = _searchService.FindTvShow(showName).ToList();
+
+                if (tvShows.Count() == 0) continue;
+
+                var tvSeries = _searchService.GetTvSeries(tvShows[0].SeriesId);
+
+                if (tvSeries == null) continue;
+
+                context.TvSeries.Add(tvSeries);
+            }
+
             context.SaveChanges();
 
             return RedirectToAction("Index");
