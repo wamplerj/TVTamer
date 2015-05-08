@@ -14,6 +14,7 @@ namespace TvTamer.Core.Models
         public string Summary { get; set; }
         public DateTime FirstAired { get; set; }
 
+        public int SeriesId { get; set; }
         public TvSeries Series { get; set; }
     }
 
@@ -28,7 +29,6 @@ namespace TvTamer.Core.Models
             this.Property(t => t.EpisodeNumber).IsRequired();
             this.Property(t => t.FirstAired).IsRequired();
             this.Property(t => t.Summary);
-            //this.Property(t => t.IsVisible).IsRequired();
 
             HasRequired(c => c.Series);
         }

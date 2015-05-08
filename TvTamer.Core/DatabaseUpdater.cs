@@ -55,7 +55,7 @@ namespace TvTamer.Core
 
             var seriesList = _context.TvSeries
                 .Where(s => SqlFunctions.DateDiff("day", s.LastUpdated, DateTime.Now) >= 7)
-                .Select(s => new {s.SeriesId, s.Name ,s.LastUpdated}).ToList();
+                .Select(s => new {s.Id, s.SeriesId, s.Name ,s.LastUpdated}).ToList();
 
             foreach (var series in seriesList)
             {
@@ -67,14 +67,15 @@ namespace TvTamer.Core
 
                 _context.TvSeries.AddOrUpdate(t => t.SeriesId, updatedSeries);
 
+
+                foreach (var episode in updatedSeries.Episodes)
+                {
+                    episode.SeriesId = series.Id;
+                    _context.TvEpisodes.AddOrUpdate(e => e.SeriesId, episode);
+                }
             }
 
             _context.SaveChanges();
-
-            //var epochLastUpdateTime = lastTimeEvent.EventTime.ToEpochTime();
-            //var updates = _searchService.GetUpdates(epochLastUpdateTime);
-            //var seriesIds = GetSeriesIds(updates.SeriesIds);
-
         }
     }
 

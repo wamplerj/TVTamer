@@ -8,6 +8,7 @@ namespace TvTamer.Core.Persistance
     public class TvContext : DbContext
     {
         public IDbSet<TvSeries> TvSeries { get; set; }
+        public IDbSet<TvEpisode> TvEpisodes { get; set; }
         public IDbSet<LoggedEvent> LoggedEvents { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
