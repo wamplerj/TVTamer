@@ -9,6 +9,7 @@ using System.Xml;
 using TvTamer.Core.Models;
 using System.IO.Compression;
 using System.Xml.Linq;
+using TvTamer.Core.Persistance;
 
 namespace TvTamer.Core
 {

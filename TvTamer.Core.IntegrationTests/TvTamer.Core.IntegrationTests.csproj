@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="EpisodeProcessingTests.cs" />
     <Compile Include="IntegrationDbInitializer.cs" />
+    <Compile Include="SearchProviderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TvContextTests.cs" />
     <Compile Include="TvDbSearchTests.cs" />

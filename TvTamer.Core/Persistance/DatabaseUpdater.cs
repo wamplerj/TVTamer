@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using NLog;
-using TvTamer.Core.Models;
-using TvTamer.Core.Persistance;
 
-namespace TvTamer.Core
+namespace TvTamer.Core.Persistance
 {
     public class DatabaseUpdater
     {
@@ -19,33 +16,6 @@ namespace TvTamer.Core
         {
             _searchService = searchService;
             _context = context;
-        }
-
-        private List<string> GetSeriesIds(List<string> updatedSeriesIds = null)
-        {
-            var seriesIds = _context.TvSeries.Select(s => s.SeriesId).ToList();
-            if (updatedSeriesIds == null) return seriesIds;
-
-            return updatedSeriesIds.Intersect(seriesIds).ToList();
-        }
-
-        private void UpdateSeriesList(List<string> seriesIds)
-        {
-            foreach (var id in seriesIds)
-            {
-                var tvSeries = _searchService.GetTvSeries(id);
-                _logger.Info("Updating {0}...", tvSeries.Name);
-                _context.TvSeries.AddOrUpdate(t => t.SeriesId, tvSeries);
-            }
-
-            _context.LoggedEvents.Add(new LoggedEvent()
-            {
-                EventTime = DateTime.Now,
-                EventType = LoggedEventType.DatabaseUpdate,
-                Message = "Updating Database from TvDB"
-            });
-
-            _context.SaveChanges();
         }
 
         public void Update()

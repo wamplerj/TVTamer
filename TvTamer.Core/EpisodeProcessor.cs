@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects.DataClasses;
 using System.Linq;
 using NLog;
 using TvTamer.Core.Models;
@@ -16,6 +14,7 @@ namespace TvTamer.Core
         private readonly Directory _sourceFolder;
         private readonly Directory _destinationFolder;
 
+        //TODO Move alternatenames to the database
         private readonly Dictionary<string, string> _alternateSeriesNames = new Dictionary<string, string>()
         {
             {"Marvels Agents of S H I E L D","Marvels Agents of SHIELD"},
