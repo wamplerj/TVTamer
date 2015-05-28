@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using NLog;
+using TvTamer.Core.Configuration;
 using TvTamer.Core.Models;
 using TvTamer.Core.Persistance;
 using Directory = TvTamer.Core.FileSystem.Directory;
@@ -9,8 +10,18 @@ using File = TvTamer.Core.FileSystem.File;
 
 namespace TvTamer.Core
 {
-    public class EpisodeProcessor
+    public interface IEpisodeProcessor
     {
+        void ProcessDownloadedEpisodes();
+        IEnumerable<TvEpisode> GetTvEpisodeFiles();
+        bool DestinationFileExists(TvEpisode episode);
+        void DeleteSourceFile(string filePath);
+    }
+
+    public class EpisodeProcessor : IEpisodeProcessor
+    {
+        private readonly EpisodeProcessorSettings _settings;
+
         private readonly Directory _sourceFolder;
         private readonly Directory _destinationFolder;
 
@@ -21,14 +32,14 @@ namespace TvTamer.Core
         };
 
         private readonly Logger _logger = LogManager.GetLogger("log");
-        private readonly string[] _extensions = { ".mkv", ".mp4", ".m4v", ".avi", ".mpg", ".mpeg", ".wmv" };
 
         private readonly bool dryRun = false;  //TODO this should come via commandline argument
 
-        public EpisodeProcessor(string sourceFolder, string destinationFolder)
+        public EpisodeProcessor(EpisodeProcessorSettings settings)
         {
-            _sourceFolder = new Directory(sourceFolder);
-            _destinationFolder = new Directory(destinationFolder);
+            _settings = settings;
+            _sourceFolder = new Directory(settings.DownloadFolder);
+            _destinationFolder = new Directory(settings.TvLibraryFolder);
         }
 
         public void ProcessDownloadedEpisodes()
@@ -75,7 +86,7 @@ namespace TvTamer.Core
         {
 
             var files = _sourceFolder.EnumerateFiles("*", true)
-                .Where(f => _extensions.Contains(new File(f).Extension.ToLower()) && !f.Contains("sample"));
+                .Where(f => _settings.FileExtentions.Contains(new File(f).Extension.ToLower()) && !f.Contains("sample"));
             return TvEpisodeFilter.GetEpisodes(files);
         }
 

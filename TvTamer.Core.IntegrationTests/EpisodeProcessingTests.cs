@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TvTamer.Core.Configuration;
 
 namespace TvTamer.Core.IntegrationTests
 {
@@ -15,9 +16,9 @@ namespace TvTamer.Core.IntegrationTests
         public void Test()
         {
 
-            var processingFolder = @"c:\temp\TV_Source\";
+            var settings = new EpisodeProcessorSettings() {DownloadFolder = @"c:\temp\TV_Source\", TvLibraryFolder = ""};
 
-            var processor = new EpisodeProcessor(processingFolder, "");
+            var processor = new EpisodeProcessor(settings);
             var files = processor.GetTvEpisodeFiles().ToList();
 
             Assert.That(files, Is.Not.Null);

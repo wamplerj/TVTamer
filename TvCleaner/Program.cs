@@ -4,6 +4,7 @@ using System.IO;
 using CommandLine;
 using NLog;
 using TvTamer.Core;
+using TvTamer.Core.Configuration;
 using TvTamer.Core.Persistance;
 
 namespace TvCleaner
@@ -21,7 +22,9 @@ namespace TvCleaner
 
             UpdateTvDatabase();
 
-            var processor = new EpisodeProcessor(_arguments.SourceFolder, _arguments.DestinationFolder);
+            var settings = new EpisodeProcessorSettings() { DownloadFolder = _arguments.SourceFolder, TvLibraryFolder = _arguments.DestinationFolder};
+
+            var processor = new EpisodeProcessor(settings);
             processor.ProcessDownloadedEpisodes();
 
             return 0;

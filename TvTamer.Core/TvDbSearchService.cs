@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using TvTamer.Core.Models;
 using System.IO.Compression;
-using System.Xml.Linq;
+using NLog;
 using TvTamer.Core.Persistance;
 
 namespace TvTamer.Core
@@ -24,16 +22,25 @@ namespace TvTamer.Core
     {
 
         private const string _TvDbApiKey = "606A01BB48D22619";
+        private readonly Logger _logger = LogManager.GetLogger("log");
 
         public IEnumerable<TvSeries> FindTvShow(string name)
         {
             var series = new List<TvSeries>();
-            var url = string.Format("http://thetvdb.com/api/GetSeries.php?seriesname={0}", name);
+            var url = $"http://thetvdb.com/api/GetSeries.php?seriesname={name}";
 
             var client = WebRequest.Create(url);
 
             var xmlDoc = new XmlDocument();
-            xmlDoc.Load(client.GetResponse().GetResponseStream());
+
+            try
+            {
+                xmlDoc.Load(client.GetResponse().GetResponseStream());
+            }
+            catch (WebException ex)
+            {
+                _logger.ErrorException($"Failed to connect to {url}", ex);
+            }
 
             foreach (XmlNode node in xmlDoc.SelectNodes("Data/Series"))
             {
@@ -144,7 +151,16 @@ namespace TvTamer.Core
 
             var client = WebRequest.Create(url);
             var xmlDoc = new XmlDocument();
-            xmlDoc.Load(client.GetResponse().GetResponseStream());
+
+            try
+            {
+                xmlDoc.Load(client.GetResponse().GetResponseStream());
+            }
+            catch (WebException ex)
+            {
+                _logger.ErrorException($"Failed to connect to {url}", ex);
+                return false;
+            }
 
             var tvdbLastUpdated = xmlDoc.SelectSingleNode("Data/Series/lastupdated")?.InnerText;
 

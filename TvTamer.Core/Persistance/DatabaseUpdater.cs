@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
@@ -6,7 +7,12 @@ using NLog;
 
 namespace TvTamer.Core.Persistance
 {
-    public class DatabaseUpdater
+    public interface IDatabaseUpdater
+    {
+        void Update();
+    }
+
+    public class DatabaseUpdater : IDatabaseUpdater
     {
         private readonly ITvSearchService _searchService;
         private readonly TvContext _context;
@@ -33,19 +39,51 @@ namespace TvTamer.Core.Persistance
                 if (!_searchService.HasUpdates(series.SeriesId, series.LastUpdated)) continue;
 
                 _logger.Info("Updates found for Series: {0}", series.Name);
+
+                var currentSeries = _context.TvSeries.Include(s => s.Episodes).FirstOrDefault(s => s.SeriesId == series.SeriesId);
                 var updatedSeries = _searchService.GetTvSeries(series.SeriesId);
 
-                _context.TvSeries.AddOrUpdate(t => t.SeriesId, updatedSeries);
+                if (currentSeries == null)
+                {
+                    _context.TvSeries.AddOrUpdate(updatedSeries);
+                    _context.SaveChanges();
+                    return;
+                }
 
+                currentSeries.Name = updatedSeries.Name;
+                currentSeries.Network = updatedSeries.Network;
+                currentSeries.AirsDayOfWeek = updatedSeries.AirsDayOfWeek;
+                currentSeries.AirsTimeOfDay = updatedSeries.AirsTimeOfDay;
+                currentSeries.FirstAired = updatedSeries.FirstAired;
+                currentSeries.Rating = updatedSeries.Rating;
+                currentSeries.Status = updatedSeries.Status;
+                currentSeries.Summary = updatedSeries.Summary;
+                currentSeries.LastUpdated = DateTime.Now;
 
                 foreach (var episode in updatedSeries.Episodes)
                 {
-                    episode.SeriesId = series.Id;
-                    _context.TvEpisodes.AddOrUpdate(e => e.SeriesId, episode);
+
+                    var currentEpisode =
+                        currentSeries.Episodes.FirstOrDefault(
+                            e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber);
+
+                    if (currentEpisode == null)
+                    {
+                        currentSeries.Episodes.Add(episode);
+                        continue;
+                    }
+
+                    currentEpisode.FirstAired = episode.FirstAired;
+                    currentEpisode.Summary = episode.Summary;
+                    currentEpisode.Title = episode.Title;
                 }
+
+                _context.TvSeries.AddOrUpdate(t => t.SeriesId, currentSeries);
             }
 
             _context.SaveChanges();
+
+            _logger.Info("TV Database Update complete.");
         }
     }
 

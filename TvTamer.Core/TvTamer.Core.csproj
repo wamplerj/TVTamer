@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -55,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\EpisodeProcessorSettings.cs" />
+    <Compile Include="Configuration\ScheduleSettings.cs" />
     <Compile Include="Persistance\DatabaseUpdater.cs" />
     <Compile Include="EpisodeProcessor.cs" />
     <Compile Include="FileSystem\Directory.cs" />
