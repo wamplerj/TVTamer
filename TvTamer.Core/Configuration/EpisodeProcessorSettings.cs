@@ -37,16 +37,9 @@ namespace TvTamer.Core.Configuration
         {
             get
             {
-                //var csvFileExtentions = (string) this["fileExtentions"];
-
-                //if (string.IsNullOrEmpty(csvFileExtentions)) return Array.Empty<string>();
-
-                //var fileExtentions = csvFileExtentions.Split(',');
-                //return fileExtentions;
                 return (string)this["fileExtentions"];
-
             }
-            //set { this["fileExtentions"] = string.Join(",", value); }
+            set { this["fileExtentions"] = value; }
         }
 
     }

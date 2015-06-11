@@ -58,14 +58,23 @@
   <ItemGroup>
     <Compile Include="Configuration\EpisodeProcessorSettings.cs" />
     <Compile Include="Configuration\ScheduleSettings.cs" />
+    <Compile Include="Configuration\TorrentSearchSettings.cs" />
+    <Compile Include="Migrations\201505072222346_InitialCreate.cs" />
+    <Compile Include="Migrations\201505072222346_InitialCreate.Designer.cs">
+      <DependentUpon>201505072222346_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506082232000_EpisodeStatus.cs" />
+    <Compile Include="Migrations\201506082232000_EpisodeStatus.Designer.cs">
+      <DependentUpon>201506082232000_EpisodeStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506091955239_Fix.cs" />
+    <Compile Include="Migrations\201506091955239_Fix.Designer.cs">
+      <DependentUpon>201506091955239_Fix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Persistance\DatabaseUpdater.cs" />
     <Compile Include="EpisodeProcessor.cs" />
     <Compile Include="FileSystem\Directory.cs" />
     <Compile Include="FileSystem\File.cs" />
-    <Compile Include="Migrations\201504021800591_InitialCreate.cs" />
-    <Compile Include="Migrations\201504021800591_InitialCreate.Designer.cs">
-      <DependentUpon>201504021800591_InitialCreate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\LoggedEvent.cs" />
     <Compile Include="Models\TvSeries.cs" />
@@ -85,8 +94,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201504021800591_InitialCreate.resx">
-      <DependentUpon>201504021800591_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201505072222346_InitialCreate.resx">
+      <DependentUpon>201505072222346_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506082232000_EpisodeStatus.resx">
+      <DependentUpon>201506082232000_EpisodeStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506091955239_Fix.resx">
+      <DependentUpon>201506091955239_Fix.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

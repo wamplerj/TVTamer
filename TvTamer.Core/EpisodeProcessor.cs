@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using NLog;
 using TvTamer.Core.Configuration;
@@ -21,6 +22,7 @@ namespace TvTamer.Core
     public class EpisodeProcessor : IEpisodeProcessor
     {
         private readonly EpisodeProcessorSettings _settings;
+        private readonly TvContext _context;
 
         private readonly Directory _sourceFolder;
         private readonly Directory _destinationFolder;
@@ -33,20 +35,19 @@ namespace TvTamer.Core
 
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        private readonly bool dryRun = false;  //TODO this should come via commandline argument
-
-        public EpisodeProcessor(EpisodeProcessorSettings settings)
+        public EpisodeProcessor(EpisodeProcessorSettings settings, TvContext context)
         {
             _settings = settings;
             _sourceFolder = new Directory(settings.DownloadFolder);
             _destinationFolder = new Directory(settings.TvLibraryFolder);
+            _context = context;
         }
 
         public void ProcessDownloadedEpisodes()
         {
             var episodes = GetTvEpisodeFiles();
 
-            _logger.Info("Found {0} files in {1}", episodes.Count(), _sourceFolder);
+            _logger.Info("Found {0} files in {1}", episodes.Count(), _sourceFolder.Path);
             _logger.Info("===========================================================================");
             DisplayFiles(episodes.Select(e => e.FileName).ToList());
 
@@ -62,7 +63,7 @@ namespace TvTamer.Core
                 deletedFiles.Add(episode.FileName);
             }
 
-            _logger.Info("\r\n\r\nDeleted {0} files from {1}", deletedFiles.Count(), _sourceFolder);
+            _logger.Info("\r\n\r\nDeleted {0} files from {1}", deletedFiles.Count(), _sourceFolder.Path);
             _logger.Info("===========================================================================");
             DisplayFiles(deletedFiles);
 
@@ -76,7 +77,7 @@ namespace TvTamer.Core
                 if (fileName.Length > 70)
                 {
                     var parts = fileName.Split('\\');
-                    fileName = parts[0];
+                    fileName = parts.Last();
                 }
                 _logger.Info(fileName);
             }
@@ -96,19 +97,27 @@ namespace TvTamer.Core
             var context = new TvContext();
             var sourceFile = new File(episode.FileName);
 
-            //TODO Look up episode name from DB
             var tvSeries =
                 context.TvSeries.Include(e => e.Episodes).FirstOrDefault(s => s.Name.ToLower() == episode.SeriesName.ToLower());
 
             if (tvSeries == null) return;
 
-            var episodeName =
+            var loadedEpisode =
                 tvSeries.Episodes.Find(
-                    e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber)?.Title;
+                    e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber);
 
-            var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {episodeName}{sourceFile.Extension}";
+            if (loadedEpisode == null) return;
+
+            var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {loadedEpisode.Title}{sourceFile.Extension}";
 
             sourceFile.Copy(destinationFilename);
+
+            loadedEpisode.FileName = destinationFilename;
+            loadedEpisode.DownloadStatus = "HAVE";
+
+            context.TvEpisodes.AddOrUpdate(e => e.Id, loadedEpisode);
+            context.SaveChanges();
+
         }
 
         public bool DestinationFileExists(TvEpisode episode)
@@ -139,8 +148,8 @@ namespace TvTamer.Core
             }
             else
             {
-                var folderParts = filePath.Substring(_sourceFolder.Path.Length).Split('\\');
-                var rootFolder = new Directory(_sourceFolder + folderParts[0]);
+                var folderParts = filePath.Substring(_sourceFolder.Path.Length + 1).Split('\\');
+                var rootFolder = new Directory(_sourceFolder.Path + "\\" + folderParts[0]);
 
                 if (!rootFolder.Exists()) return;
 

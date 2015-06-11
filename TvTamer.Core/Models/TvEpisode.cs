@@ -13,6 +13,7 @@ namespace TvTamer.Core.Models
         public string FileName { get; set; }
         public string Summary { get; set; }
         public DateTime FirstAired { get; set; }
+        public string DownloadStatus { get; set; }
 
         public int SeriesId { get; set; }
         public TvSeries Series { get; set; }
@@ -29,6 +30,7 @@ namespace TvTamer.Core.Models
             this.Property(t => t.EpisodeNumber).IsRequired();
             this.Property(t => t.FirstAired).IsRequired();
             this.Property(t => t.Summary);
+            this.Property(t => t.DownloadStatus).IsRequired();
 
             HasRequired(c => c.Series);
         }

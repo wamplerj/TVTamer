@@ -20,6 +20,11 @@ namespace TvTamer.Core.FileSystem
             _fileInfo = new FileInfo(_filePath);
         }
 
+        public override string ToString()
+        {
+            return _fileInfo.FullName;
+        }
+
         public string DirectoryName => _fileInfo.DirectoryName;
         public string Extension => _fileInfo.Extension;
 

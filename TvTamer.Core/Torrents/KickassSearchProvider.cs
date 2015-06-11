@@ -28,7 +28,7 @@ namespace TvTamer.Core.Torrents
             var encodedSearch = HttpUtility.HtmlEncode(search);
 
             //TODO Get query string from config file
-            var url = $"http://kickass.to/usearch/{encodedSearch}/?field=seeders&sorder=desc&rss=1";
+            var url = $"https://kat.cr/usearch/{encodedSearch}/?field=seeders&sorder=desc&rss=1";
             var xml = _webRequester.GetXml(url);
 
             var nodes = xml?.SelectNodes("rss/channel/item");

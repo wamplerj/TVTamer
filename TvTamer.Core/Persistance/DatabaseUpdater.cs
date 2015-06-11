@@ -69,6 +69,7 @@ namespace TvTamer.Core.Persistance
 
                     if (currentEpisode == null)
                     {
+                        episode.DownloadStatus = "WANT";
                         currentSeries.Episodes.Add(episode);
                         continue;
                     }
@@ -76,6 +77,7 @@ namespace TvTamer.Core.Persistance
                     currentEpisode.FirstAired = episode.FirstAired;
                     currentEpisode.Summary = episode.Summary;
                     currentEpisode.Title = episode.Title;
+                   
                 }
 
                 _context.TvSeries.AddOrUpdate(t => t.SeriesId, currentSeries);

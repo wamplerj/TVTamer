@@ -19,6 +19,11 @@ namespace TvTamer.Core.FileSystem
             _folder = folder;
         }
 
+        public override string ToString()
+        {
+            return Path;
+        }
+
         public string Path => System.IO.Path.GetDirectoryName(_folder);
 
         public void Delete(bool recursive = false)

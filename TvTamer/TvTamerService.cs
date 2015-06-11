@@ -11,6 +11,7 @@ namespace TvTamer
     {
         private readonly IDatabaseUpdater _databaseUpdater;
         private readonly IEpisodeProcessor _episodeProcessor;
+        private readonly IEpisodeDownloader _episodeDownloader;
         private readonly ScheduleSettings _scheduleSettings;
 
         private readonly Logger _logger = LogManager.GetLogger("log");
@@ -19,14 +20,14 @@ namespace TvTamer
         private Timer _downloadFolderCleanupTimer;
         private Timer _episodeSearchTimer;
 
-        public TvTamerService(IDatabaseUpdater databaseUpdater, IEpisodeProcessor episodeProcessor, ScheduleSettings scheduleSettings)
+        public TvTamerService(IDatabaseUpdater databaseUpdater, IEpisodeProcessor episodeProcessor, IEpisodeDownloader episodeDownloader, ScheduleSettings scheduleSettings)
         {
             _databaseUpdater = databaseUpdater;
             _episodeProcessor = episodeProcessor;
+            _episodeDownloader = episodeDownloader;
             _scheduleSettings = scheduleSettings;
 
         }
-
 
         private void StartBackgroundTasks()
         {
@@ -47,7 +48,11 @@ namespace TvTamer
                 _episodeProcessor.ProcessDownloadedEpisodes();
             }, null, 60000, 60000 * _scheduleSettings.ProcessDownloadedFilesFrequency);
 
-            _episodeSearchTimer = new Timer(_ => { _logger.Info("Searching for Episodes to Download: {0}", DateTime.Now); }, null, 30000, 60000 * _scheduleSettings.NewEpisodeSearchFrequency);
+            _episodeSearchTimer = new Timer(_ => 
+            {
+                _logger.Info("Searching for Episodes to Download: {0}", DateTime.Now);
+                _episodeDownloader.DownloadWantedEpisodes();
+            }, null, 30000, 60000 * _scheduleSettings.NewEpisodeSearchFrequency);
         }
 
         private void StopBackgroundTasks()
