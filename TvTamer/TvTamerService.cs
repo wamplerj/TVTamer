@@ -46,7 +46,7 @@ namespace TvTamer
             {
                 _logger.Info("Download Cleanup Starting: {0}", DateTime.Now);
                 _episodeProcessor.ProcessDownloadedEpisodes();
-            }, null, 60000, 60000 * _scheduleSettings.ProcessDownloadedFilesFrequency);
+            }, null, 600000, 60000 * _scheduleSettings.ProcessDownloadedFilesFrequency);
 
             _episodeSearchTimer = new Timer(_ => 
             {

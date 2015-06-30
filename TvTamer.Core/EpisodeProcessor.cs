@@ -47,6 +47,9 @@ namespace TvTamer.Core
         {
             var episodes = GetTvEpisodeFiles();
 
+            if(_settings.DryRun)
+                _logger.Info("DryRun = true");
+            
             _logger.Info("Found {0} files in {1}", episodes.Count(), _sourceFolder.Path);
             _logger.Info("===========================================================================");
             DisplayFiles(episodes.Select(e => e.FileName).ToList());
@@ -100,10 +103,8 @@ namespace TvTamer.Core
             var tvSeries =
                 context.TvSeries.Include(e => e.Episodes).FirstOrDefault(s => s.Name.ToLower() == episode.SeriesName.ToLower());
 
-            if (tvSeries == null) return;
-
             var loadedEpisode =
-                tvSeries.Episodes.Find(
+                tvSeries?.Episodes.Find(
                     e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber);
 
             if (loadedEpisode == null) return;
@@ -143,7 +144,9 @@ namespace TvTamer.Core
             var file = new File(filePath);
             if (file.DirectoryName == _sourceFolder.Path)
             {
-                file.Delete();
+                if (!_settings.DryRun)
+                    file.Delete();
+
                 _logger.Info("Deleted file from source at: {0}\r\n", filePath);
             }
             else
@@ -153,7 +156,9 @@ namespace TvTamer.Core
 
                 if (!rootFolder.Exists()) return;
 
-                rootFolder.Delete(true);
+                if(!_settings.DryRun)
+                    rootFolder.Delete(true);
+
                 _logger.Info("Deleted folder from source at: {0}\r\n", rootFolder);
             }
 

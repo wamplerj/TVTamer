@@ -12,7 +12,6 @@ namespace TvTamer.Core.UnitTests
         {
 
             var fileName = "Greys.Anatomy.S11E14.720p.HDTV.X264-DIMENSION [GloDLS]";
-
             var result = TvEpisodeFilter.GetSeriesName(fileName);
 
             Assert.That(result, Is.EqualTo("Greys Anatomy"));
