@@ -21,15 +21,15 @@ namespace TvTamer.Core
 
             _logger.Info($"Getting XML from url: {url}");
 
-            var client = WebRequest.Create(url);
+            var client = new GZipWebClient();
             var xmlDoc = new XmlDocument();
 
             try
             {
-                var response = client.GetResponse();
-                xmlDoc.Load(response.GetResponseStream());
+                var xml = client.DownloadString(url);
+                xmlDoc.LoadXml(xml);
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex);
             }

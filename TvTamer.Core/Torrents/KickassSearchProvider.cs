@@ -25,7 +25,7 @@ namespace TvTamer.Core.Torrents
         public Torrent GetTorrent(string search)
         {
 
-            var encodedSearch = HttpUtility.HtmlEncode(search);
+            var encodedSearch = WebUtility.UrlEncode(search);
 
             //TODO Get query string from config file
             var url = $"https://kat.cr/usearch/{encodedSearch}/?field=seeders&sorder=desc&rss=1";

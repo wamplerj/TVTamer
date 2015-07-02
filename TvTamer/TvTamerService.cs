@@ -40,7 +40,7 @@ namespace TvTamer
             {
                 _logger.Info("Database Update Starting: {0}", DateTime.Now);
                 _databaseUpdater.Update();
-            }, null, 1000, 60000 * _scheduleSettings.DatabaseUpdateFrequency);
+            }, null, 100000, 60000 * _scheduleSettings.DatabaseUpdateFrequency);
 
             _downloadFolderCleanupTimer = new Timer(_ =>
             {
@@ -52,7 +52,7 @@ namespace TvTamer
             {
                 _logger.Info("Searching for Episodes to Download: {0}", DateTime.Now);
                 _episodeDownloader.DownloadWantedEpisodes();
-            }, null, 30000, 60000 * _scheduleSettings.NewEpisodeSearchFrequency);
+            }, null, 1000, 60000 * _scheduleSettings.NewEpisodeSearchFrequency);
         }
 
         private void StopBackgroundTasks()
