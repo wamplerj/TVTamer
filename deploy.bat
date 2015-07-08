@@ -3,7 +3,7 @@
 IF [%1] == [] GOTO EXIT
 
 echo Building tvtamer solution
-"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" tvtamer.sln /t:build /p:Configuration=Release
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" build.proj /t:build /p:Configuration=Release
 
 echo Copying Files to %1TVCleaner\
 

@@ -16,10 +16,7 @@ namespace TvTamer.Core.Torrents
     public class NullSearchProvider : ISearchProvider
     {
 
-        public Torrent GetTorrent(string search)
-        {
-            return null;
-        }
+        public Torrent GetTorrent(string search) => null;
 
         public ISearchProvider NextSearchProvider { get; }
     }

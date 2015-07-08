@@ -33,8 +33,8 @@ namespace TvTamer.Core.Torrents
 
             var nodes = xml?.SelectNodes("rss/channel/item");
 
-            if (nodes == null)
-                NextSearchProvider.GetTorrent(search);
+            if (nodes == null || nodes.Count == 0)
+                return NextSearchProvider.GetTorrent(search);
 
             foreach (XmlNode node in nodes)
             {
