@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using TvTamer.Core.Models;
@@ -11,7 +12,7 @@ namespace TvTamer.Core.Persistance
         IDbSet<TvEpisode> TvEpisodes { get; set; }
         IDbSet<LoggedEvent> LoggedEvents { get; set; }
 
-        Database Database { get;}
+        List<T> QuerySql<T>(string query);
         int SaveChanges();
     }
 
@@ -20,6 +21,10 @@ namespace TvTamer.Core.Persistance
         public IDbSet<TvSeries> TvSeries { get; set; }
         public IDbSet<TvEpisode> TvEpisodes { get; set; }
         public IDbSet<LoggedEvent> LoggedEvents { get; set; }
+        public List<T> QuerySql<T>(string query)
+        {
+            return Database.SqlQuery<T>(query).ToList();
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -38,7 +38,7 @@ namespace TvTamer
                 e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
                 WHERE (DATEDIFF(day, e.[FirstAired], SysDateTime())) >= 0 AND N'WANT' = e.[DownloadStatus] ORDER BY e.[FirstAired] ASC";
 
-            var episodesToDownload = _context.Database.SqlQuery<TvEpisode>(query).ToList();
+            var episodesToDownload = _context.QuerySql<TvEpisode>(query).ToList();
 
             foreach (var episode in episodesToDownload)
             {

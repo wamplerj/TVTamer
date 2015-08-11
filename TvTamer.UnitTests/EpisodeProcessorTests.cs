@@ -63,12 +63,7 @@ namespace TvTamer.UnitTests
             episodeFile.Setup(ef => ef.Extension).Returns(".mp4");
             episodeFile.Setup(ef => ef.DirectoryName).Returns("DownloadFolder");
 
-            var fileSystemFactory = new Mock<IFileSystemFactory>();
-            fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
-            fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
-            fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder\\The Walking Dead\\Season 05\\")).Returns(seriesDestinationFolder.Object);
-            fileSystemFactory.Setup(
-                fsf => fsf.GetFile("DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS.mp4")).Returns(episodeFile.Object);
+            var fileSystemFactory = GetFileSystemFactory(source, destination, seriesDestinationFolder, "DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS.mp4", episodeFile);
 
             var episode = new TvEpisode() {Season = 5, EpisodeNumber = 12, Title = "Some Title"};
             var series = new TvSeries() {Name = "The Walking Dead"};
@@ -109,19 +104,54 @@ namespace TvTamer.UnitTests
             episodeFile.Verify(ef => ef.Delete(), Times.Once);
         }
 
+
+        [Test]
+        public void FolderIsDeletedAfterFileIsProcessed()
+        {
+
+            var file = "DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS\\blah.mp4";
+
+            var source = new Mock<IDirectory>();
+            source.SetupGet(s => s.Path).Returns("DownloadFolder");
+            var destination = new Mock<IDirectory>();
+            var seriesDestinationFolder = new Mock<IDirectory>();
+            var sourceEpisodeFolder = new Mock<IDirectory>();
+            sourceEpisodeFolder.Setup(sef => sef.Exists()).Returns(true);
+
+            var episodeFile = new Mock<IFile>();
+            episodeFile.Setup(ef => ef.Extension).Returns(".mp4");
+            episodeFile.Setup(ef => ef.DirectoryName).Returns("DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS\\");
+
+            var fileSystemFactory = GetFileSystemFactory(source, destination, seriesDestinationFolder, file, episodeFile);
+            fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS")).Returns(sourceEpisodeFolder.Object);
+
+            var context = new Mock<ITvContext>();
+
+            var processor = new EpisodeProcessor(_settings, context.Object, fileSystemFactory.Object);
+            processor.DeleteSourceFile(file);
+
+            sourceEpisodeFolder.Verify(sef => sef.Delete(true), Times.Once);
+
+
+
+        }
+        private Mock<IFileSystemFactory> GetFileSystemFactory(Mock<IDirectory> source, Mock<IDirectory> destination, Mock<IDirectory> seriesDestinationFolder, string episodeFilePath, Mock<IFile> episodeFile)
+        {
+            var fileSystemFactory = new Mock<IFileSystemFactory>();
+            fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
+            fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
+            fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder\\The Walking Dead\\Season 05\\"))
+                .Returns(seriesDestinationFolder.Object);
+            fileSystemFactory.Setup(
+                fsf => fsf.GetFile(episodeFilePath))
+                .Returns(episodeFile.Object);
+            return fileSystemFactory;
+        }
+
         public abstract class MockableDbSetWithExtensions<T> : DbSet<T> where T : class
         {
             public abstract void AddOrUpdate(params T[] entities);
             public abstract void AddOrUpdate(Expression<Func<T, object>> identifierExpression, params T[] entities);
-        }
-
-
-        [Test]
-        public void SampleFilesAreExcluded()
-        {
-
-
-
         }
 
     }
