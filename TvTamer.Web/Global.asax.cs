@@ -21,7 +21,7 @@ namespace TvTamer.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            Database.SetInitializer(new DropCreateDatabaseAlways<TvContext>());
+            //Database.SetInitializer(new DropCreateDatabaseAlways<TvContext>());
 
         }
     }

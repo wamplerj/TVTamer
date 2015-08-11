@@ -5,7 +5,17 @@ using TvTamer.Core.Models;
 
 namespace TvTamer.Core.Persistance
 {
-    public class TvContext : DbContext
+    public interface ITvContext
+    {
+        IDbSet<TvSeries> TvSeries { get; set; }
+        IDbSet<TvEpisode> TvEpisodes { get; set; }
+        IDbSet<LoggedEvent> LoggedEvents { get; set; }
+
+        Database Database { get;}
+        int SaveChanges();
+    }
+
+    public class TvContext : DbContext, ITvContext
     {
         public IDbSet<TvSeries> TvSeries { get; set; }
         public IDbSet<TvEpisode> TvEpisodes { get; set; }

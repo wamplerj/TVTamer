@@ -24,8 +24,8 @@ namespace TvCleaner
 
             var settings = new EpisodeProcessorSettings() { DownloadFolder = _arguments.SourceFolder, TvLibraryFolder = _arguments.DestinationFolder};
 
-            var processor = new EpisodeProcessor(settings, new TvContext());
-            processor.ProcessDownloadedEpisodes();
+            //var processor = new EpisodeProcessor(settings, new TvContext());
+            //processor.ProcessDownloadedEpisodes();
 
             return 0;
         }

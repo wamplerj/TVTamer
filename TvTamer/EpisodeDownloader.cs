@@ -16,13 +16,13 @@ namespace TvTamer
 
     public class EpisodeDownloader : IEpisodeDownloader
     {
-        private readonly TvContext _context;
+        private readonly ITvContext _context;
         private readonly Logger _logger = LogManager.GetLogger("log");
         private readonly ISearchProvider _searchProvider;
         private readonly TorrentSearchSettings _settings;
         private readonly IWebRequester _webRequester;
 
-        public EpisodeDownloader(TvContext context, ISearchProvider searchProvider, IWebRequester webRequester, TorrentSearchSettings settings)
+        public EpisodeDownloader(ITvContext context, ISearchProvider searchProvider, IWebRequester webRequester, TorrentSearchSettings settings)
         {
             _context = context;
             _searchProvider = searchProvider;

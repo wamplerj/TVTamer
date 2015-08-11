@@ -30,7 +30,6 @@ namespace TvTamer.Core
             var url = $"http://thetvdb.com/api/GetSeries.php?seriesname={name}";
 
             var client = WebRequest.Create(url);
-
             var xmlDoc = new XmlDocument();
 
             try
@@ -64,7 +63,7 @@ namespace TvTamer.Core
 
         private List<string> GetGenres(string delmitedGenres)
         {
-            return delmitedGenres.Split('|').ToList();
+            return delmitedGenres.Split('|').Where(x => !string.IsNullOrEmpty(x)).ToList();
         }
 
         public TvSeries GetTvSeries(string id)
@@ -130,6 +129,9 @@ namespace TvTamer.Core
                     episode.Season = Convert.ToInt32(node["SeasonNumber"].InnerText);
                     episode.Title = node["EpisodeName"].InnerText;
                     episode.FirstAired = Convert.ToDateTime(node["FirstAired"].InnerText);
+
+                    //TODO Make initial download status configurable
+                    episode.DownloadStatus = "WANT";
 
                     overview = node["Overview"]?.InnerText ?? string.Empty;
                     episode.Summary = overview;

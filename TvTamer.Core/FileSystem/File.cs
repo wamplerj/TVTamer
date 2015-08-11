@@ -8,7 +8,7 @@ using NLog;
 
 namespace TvTamer.Core.FileSystem
 {
-    public class File
+    public class File : IFile
     {
         private readonly string _filePath;
         private readonly FileInfo _fileInfo;

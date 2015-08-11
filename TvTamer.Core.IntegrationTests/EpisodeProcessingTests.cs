@@ -16,10 +16,10 @@ namespace TvTamer.Core.IntegrationTests
             var settings = new EpisodeProcessorSettings() {DownloadFolder = @"c:\temp\TV_Source\", TvLibraryFolder = ""};
             var context = new TvContext();
 
-            var processor = new EpisodeProcessor(settings, context);
-            var files = processor.GetTvEpisodeFiles().ToList();
+            //var processor = new EpisodeProcessor(settings, context);
+            //var files = processor.GetTvEpisodeFiles().ToList();
 
-            Assert.That(files, Is.Not.Null);
+            //Assert.That(files, Is.Not.Null);
 
         }
 

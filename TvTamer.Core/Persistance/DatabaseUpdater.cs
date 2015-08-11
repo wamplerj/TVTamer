@@ -15,10 +15,10 @@ namespace TvTamer.Core.Persistance
     public class DatabaseUpdater : IDatabaseUpdater
     {
         private readonly ITvSearchService _searchService;
-        private readonly TvContext _context;
+        private readonly ITvContext _context;
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        public DatabaseUpdater(ITvSearchService searchService, TvContext context)
+        public DatabaseUpdater(ITvSearchService searchService, ITvContext context)
         {
             _searchService = searchService;
             _context = context;

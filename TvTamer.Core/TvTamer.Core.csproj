@@ -59,6 +59,9 @@
     <Compile Include="Configuration\EpisodeProcessorSettings.cs" />
     <Compile Include="Configuration\ScheduleSettings.cs" />
     <Compile Include="Configuration\TorrentSearchSettings.cs" />
+    <Compile Include="FileSystem\FileSystemFactory.cs" />
+    <Compile Include="FileSystem\IDirectory.cs" />
+    <Compile Include="FileSystem\IFile.cs" />
     <Compile Include="Migrations\201505072222346_InitialCreate.cs" />
     <Compile Include="Migrations\201505072222346_InitialCreate.Designer.cs">
       <DependentUpon>201505072222346_InitialCreate.cs</DependentUpon>
@@ -72,7 +75,6 @@
       <DependentUpon>201506091955239_Fix.cs</DependentUpon>
     </Compile>
     <Compile Include="Persistance\DatabaseUpdater.cs" />
-    <Compile Include="EpisodeProcessor.cs" />
     <Compile Include="FileSystem\Directory.cs" />
     <Compile Include="FileSystem\File.cs" />
     <Compile Include="Migrations\Configuration.cs" />

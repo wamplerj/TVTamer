@@ -9,7 +9,7 @@ using NLog.Common;
 
 namespace TvTamer.Core.FileSystem
 {
-    public class Directory
+    public class Directory : IDirectory
     {
         private readonly string _folder;
         private readonly Logger _logger = LogManager.GetLogger("log");

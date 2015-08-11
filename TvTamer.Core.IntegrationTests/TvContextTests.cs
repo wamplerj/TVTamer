@@ -11,13 +11,6 @@ namespace TvTamer.Core.IntegrationTests
     public class TvContextTests
     {
 
-        [SetUp]
-        public void Setup()
-        {
-            Database.SetInitializer(new IntegrationDbInitializer());
-            AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ""));
-        }
-
         [Test]
         public void Get_First_Tv_Series()
         {

@@ -51,6 +51,7 @@
     <Compile Include="TorrentSearchChainTests.cs" />
     <Compile Include="TvEpisodeFilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TvSearchServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
