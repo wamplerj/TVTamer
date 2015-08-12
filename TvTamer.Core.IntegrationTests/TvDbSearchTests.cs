@@ -17,7 +17,7 @@ namespace TvTamer.Core.IntegrationTests
         {
             var service = new TvDbSearchService();
 
-            var results = service.FindTvShow("Friends");
+            var results = service.FindTvSeries("Friends");
 
             Assert.That(results.Count(), Is.GreaterThan(1));
 

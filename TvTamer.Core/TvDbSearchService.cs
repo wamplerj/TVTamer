@@ -13,7 +13,7 @@ namespace TvTamer.Core
 {
     public interface ITvSearchService
     {
-        IEnumerable<TvSeries> FindTvShow(string name);
+        IEnumerable<TvSeries> FindTvSeries(string name);
         TvSeries GetTvSeries(string id);
         bool HasUpdates(string seriesId, DateTime lastUpdated);
     }
@@ -24,7 +24,7 @@ namespace TvTamer.Core
         private const string _TvDbApiKey = "606A01BB48D22619";
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        public IEnumerable<TvSeries> FindTvShow(string name)
+        public IEnumerable<TvSeries> FindTvSeries(string name)
         {
             var series = new List<TvSeries>();
             var url = $"http://thetvdb.com/api/GetSeries.php?seriesname={name}";

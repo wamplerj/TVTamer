@@ -33,7 +33,7 @@ namespace TvTamer.Web.Controllers
         public ActionResult Add(string seriesName)
         {
 
-            var series = _searchService.FindTvShow(seriesName);
+            var series = _searchService.FindTvSeries(seriesName);
 
             return View("ChooseSeriesResult",series);
         }
@@ -65,7 +65,7 @@ namespace TvTamer.Web.Controllers
 
                 if (showName.Contains('\\')) continue;
 
-                var tvShows = _searchService.FindTvShow(showName).ToList();
+                var tvShows = _searchService.FindTvSeries(showName).ToList();
 
                 if (tvShows.Count() == 0) continue;
 
