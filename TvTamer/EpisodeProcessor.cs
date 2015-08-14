@@ -63,7 +63,7 @@ namespace TvTamer
 
             LogFileInformation(episodes.Select(e => e.FileName).ToList(), "Found {0} files in {1}");
 
-            var deletedFiles = new List<string>();
+            //var deletedFiles = new List<string>();
             foreach (var episode in episodes)
             {
                 if (!DestinationFileExists(episode))
@@ -72,10 +72,10 @@ namespace TvTamer
                 }
 
                 DeleteSourceFile(episode.FileName);
-                deletedFiles.Add(episode.FileName);
+                //deletedFiles.Add(episode.FileName);
             }
 
-            LogFileInformation(deletedFiles, "\r\n\r\nDeleted {0} files from {1}");
+            //LogFileInformation(deletedFiles, "\r\n\r\nDeleted {0} files from {1}");
 
         }
 
@@ -116,11 +116,16 @@ namespace TvTamer
                 tvSeries?.Episodes.Find(
                     e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber);
 
-            if (loadedEpisode == null) return;
+            if (loadedEpisode == null)
+            {
+                _logger.Info($"Could not find Season: {episode.Season} Episode: {episode.EpisodeNumber} of Series: {episode.SeriesName} in database");
+                return;
+            }
 
             var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {loadedEpisode.Title}{sourceFile.Extension}";
 
             sourceFile.Copy(destinationFilename);
+            _logger.Info($"Copying {sourceFile} to {destinationFilename}");
 
             loadedEpisode.FileName = destinationFilename;
             loadedEpisode.DownloadStatus = "HAVE";
@@ -168,7 +173,7 @@ namespace TvTamer
                 if(!_settings.DryRun)
                     rootFolder.Delete(true);
 
-                _logger.Info("Deleted folder from source at: {0}\r\n", rootFolder);
+                _logger.Info("Deleted folder from source at: {0}\r\n", rootFolder.Path);
             }
 
 
