@@ -27,7 +27,7 @@ namespace TvTamer
             builder.RegisterType<TvContext>().As<ITvContext>();
             builder.RegisterType<FileSystemFactory>().As<IFileSystemFactory>();
 
-            builder.RegisterType<EpisodeProcessor>();
+            builder.RegisterType<EpisodeProcessor>().As<IEpisodeProcessor>();
 
             //Search Provider Registration
             builder.RegisterType<NullSearchProvider>().Named<ISearchProvider>("searchProvider");
