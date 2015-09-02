@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
 using TvTamer.Core;
+using TvTamer.Core.Persistance;
 
 namespace TvTamer.Web.App_Start
 {
@@ -23,6 +24,7 @@ namespace TvTamer.Web.App_Start
 
 
             builder.RegisterType<TvDbSearchService>().As<ITvSearchService>();
+            builder.RegisterType<TvContext>().As<ITvContext>();
 
             //// OPTIONAL: Register model binders that require DI.
             //builder.RegisterModelBinders(Assembly.GetExecutingAssembly());

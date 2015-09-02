@@ -1,0 +1,23 @@
+﻿@model TvTamer.Web.Models.CalendarViewModel
+
+@{
+    ViewBag.Title = "Upcoming Shows - Next 7 Days";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@foreach (var dayofWeek in Model.Episodes.Keys)
+{
+    <h3>@(dayofWeek.ToString("dddd, MMM dd yyyy") )</h3>
+
+    foreach (var episode in Model.Episodes[dayofWeek])
+    {
+        <li>
+            <a href="/show/details/@episode.SeriesId/@episode.SeriesName.ToSlug()">@episode.SeriesName</a>
+            (@( string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber) ))<br />
+            @episode.Title
+        </li>
+    }
+}
+
+

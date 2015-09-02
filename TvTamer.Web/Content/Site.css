@@ -22,3 +22,9 @@ select,
 textarea {
     max-width: 280px;
 }
+
+#todays-episodes {overflow-y: auto}
+#todays-episodes li {
+   margin-bottom: 20px;
+}
+

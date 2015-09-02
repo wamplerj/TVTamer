@@ -5,14 +5,40 @@
     ViewBag.Title = "TV Series";
 }
 
-<ul>
-    @foreach (var series in Model)
-    {
-        <li>@series.Name</li>
-    }
-</ul>
+<h2>@ViewBag.Title</h2>
 
-<p>
-    <a href="/series/add">Add New Series</a>
-</p>
+<div class="row">
+    <p>
+        <a class="btn btn-primary" href="/series/add">Add New Series</a>
+    </p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Show</th><th>Network</th><th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var series in Model)
+                {
+                    <tr>
+                        <td><a href="/show/details/@series.Id/@series.Name.ToSlug()">@series.Name</a></td>
+                        <td>@series.Network</td>
+                        <td>@series.Status</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">
+                        <p>No TV Series have been added yet.</p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
 

@@ -1,4 +1,7 @@
-﻿@{
+﻿@using TvTamer.Web
+@model TvTamer.Web.Models.HomeViewModel
+
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -10,13 +13,26 @@
 
 <div class="row">
     <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        <h2>Today's Episodes</h2>
+        @if (!Model.TodaysEpisodes.Any())
+        {
+            <p>No episodes today.</p>
+            <p><a href="http://www.tvguide.com/new-tonight/">Look for something new to watch.</a></p>
+        }
+        else
+        {
+            <ul id="todays-episodes">
+                @foreach (var episode in Model.TodaysEpisodes)
+                {
+                    <li>
+                        <a href="/show/details/@episode.SeriesId/@episode.SeriesName.ToSlug()">@episode.SeriesName</a>
+                        (@( string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber) ))<br/>
+                        @episode.Title
+                    </li>
+                }
+            </ul>
+            <p><a class="btn btn-default" href="/this-week">More Episodes &raquo;</a></p>
+        }
     </div>
     <div class="col-md-4">
         <h2>Get more libraries</h2>

@@ -1,0 +1,43 @@
+﻿@using TvTamer.Web.Controllers
+@model TvTamer.Core.Models.TvSeries
+
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<h1>@Model.Name</h1>
+
+<p>
+    @Model.AirsDayOfWeek
+    @Model.AirsTimeOfDay
+    @Model.FirstAired
+    @Model.Network
+    @Model.Rating
+    @Model.Status
+    @Model.Summary
+</p>
+
+@if (Model.Episodes.Any())
+{
+    <h3>Episodes</h3>
+    <table class="table  table-striped">
+        <tr><th>Season/Episode Number</th><th>Episode Name</th><th>Air Date</th><th>Status</th></tr>
+        @foreach (var episode in Model.Episodes)
+        {
+        <tr>
+            <td>@( string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber) ) </td>
+            <td>
+                <h4>@episode.Title</h4>
+                <p class="small">
+                    @episode.Summary
+                </p>
+            </td>
+            <td class="text-nowrap">@episode.FirstAired.ToString("MMM dd, yyyy")</td>
+            <td>@episode.DownloadStatus</td>
+        </tr>        
+
+        }
+    </table>
+}
+
+

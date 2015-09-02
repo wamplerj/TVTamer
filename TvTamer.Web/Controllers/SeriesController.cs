@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using TvTamer.Core;
 using TvTamer.Core.Persistance;
 using System.Web.Mvc;
@@ -9,16 +10,17 @@ namespace TvTamer.Web.Controllers
     public class SeriesController : Controller
     {
         private readonly ITvSearchService _searchService;
+        private readonly ITvContext _context;
 
-        public SeriesController(ITvSearchService searchService)
+        public SeriesController(ITvSearchService searchService, ITvContext context)
         {
             _searchService = searchService;
+            _context = context;
         }
 
         public ActionResult Index()
         {
-            var context = new TvContext();
-            var series = context.TvSeries.ToList();
+            var series = _context.TvSeries.OrderBy(s => s.Name).ToList();
 
             return View(series);
         }
@@ -38,14 +40,22 @@ namespace TvTamer.Web.Controllers
             return View("ChooseSeriesResult",series);
         }
 
+
+        [HttpGet]
+        public ActionResult Details(int id)
+        {
+            var series = _context.TvSeries.Include(s => s.Episodes).FirstOrDefault(s => s.Id == id);
+
+            return View(series);
+        }
+
         [HttpPost]
         public ActionResult Save(string seriesId)
         {
             var series = _searchService.GetTvSeries(seriesId);
 
-            var context = new TvContext();
-            context.TvSeries.Add(series);
-            context.SaveChanges();
+            _context.TvSeries.Add(series);
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
 
@@ -56,7 +66,6 @@ namespace TvTamer.Web.Controllers
         {
 
             var seriesFolders = Directory.GetDirectories(@"\\wampler-server\Storage\Media\TV");
-            var context = new TvContext();
 
             foreach (var seriesFolder in seriesFolders)
             {
@@ -67,16 +76,16 @@ namespace TvTamer.Web.Controllers
 
                 var tvShows = _searchService.FindTvSeries(showName).ToList();
 
-                if (tvShows.Count() == 0) continue;
+                if (!tvShows.Any()) continue;
 
                 var tvSeries = _searchService.GetTvSeries(tvShows[0].SeriesId);
 
                 if (tvSeries == null) continue;
 
-                context.TvSeries.Add(tvSeries);
+                _context.TvSeries.Add(tvSeries);
             }
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
 

@@ -3,7 +3,7 @@
 
 open Fake
 
-RestorePackages()
+//RestorePackages()
 
 // Properties
 let buildDir = "./build/"
@@ -43,8 +43,8 @@ Target "Default" (fun _ ->
 
 // Dependencies
 "Clean"
-  ==> "BuildTests"
   ==> "BuildApp"
+  ==> "BuildTests"
   ==> "RunUnitTests"
   ==> "Default"
 

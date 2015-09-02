@@ -14,6 +14,18 @@ namespace TvTamer.Web
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "This Week",
+                url: "this-week",
+                defaults: new { controller = "Episode", action = "Calendar", id = UrlParameter.Optional}
+            );
+
+            routes.MapRoute(
+                name: "SeriesView",
+                url: "show/details/{id}/{slug}",
+                defaults: new { controller = "Series", action = "Details", id = UrlParameter.Optional, slug = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
