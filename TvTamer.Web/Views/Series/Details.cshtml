@@ -1,43 +1,49 @@
 ﻿@using TvTamer.Web.Controllers
-@model TvTamer.Core.Models.TvSeries
+@model TvTamer.Web.Models.SeriesDetailsViewModel
 
 @{
-    ViewBag.Title = Model.Name;
+    ViewBag.Title = Model.Series.Name;
 }
 
-<h1>@Model.Name</h1>
-
+<input type="hidden" id="seriesId" value="@Model.Series.Id"/>
+<h1>@Model.Series.Name</h1>
 <p>
-    @Model.AirsDayOfWeek
-    @Model.AirsTimeOfDay
-    @Model.FirstAired
-    @Model.Network
-    @Model.Rating
-    @Model.Status
-    @Model.Summary
+    @Model.Series.Summary
 </p>
+<div class="row">
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">Airs: @Model.Series.AirsDayOfWeek at @Model.Series.AirsTimeOfDay</li>
+            <li class="list-group-item">Network: @Model.Series.Network</li>
+            <li class="list-group-item">Rating: @Model.Series.Rating</li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">First Aired: @Model.Series.FirstAired.ToString("MMM dd, yyyy")</li>
+            <li class="list-group-item">Status : @Model.Series.Status</li>
+        </ul>
+    </div>
+</div>
 
-@if (Model.Episodes.Any())
+@if (Model.Series.Episodes.Any())
 {
-    <h3>Episodes</h3>
-    <table class="table  table-striped">
-        <tr><th>Season/Episode Number</th><th>Episode Name</th><th>Air Date</th><th>Status</th></tr>
-        @foreach (var episode in Model.Episodes)
-        {
-        <tr>
-            <td>@( string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber) ) </td>
-            <td>
-                <h4>@episode.Title</h4>
-                <p class="small">
-                    @episode.Summary
-                </p>
-            </td>
-            <td class="text-nowrap">@episode.FirstAired.ToString("MMM dd, yyyy")</td>
-            <td>@episode.DownloadStatus</td>
-        </tr>        
-
-        }
-    </table>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Episodes</h3>
+        </div>
+        <div class="col-md-6">
+            @if (Model.Seasons.Any())
+            {
+                <select id="season" class="pull-right" style="line-height: 1.1; margin-top: 20px; margin-bottom: 10px;">
+                    @foreach (var season in Model.Seasons)
+                    {
+                        <option value="@season">Season @season</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+    @Html.Partial("_EpisodeList", Model.Series.Episodes)
 }
-
 

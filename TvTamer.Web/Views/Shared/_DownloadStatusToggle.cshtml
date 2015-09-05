@@ -1,0 +1,23 @@
+﻿@using System.Globalization
+@model TvTamer.Core.Models.TvEpisode
+
+@if (Model.DownloadStatus == "WANT")
+{
+    <button class="downloadstatus btn btn-warning" data-episodeId="@Model.Id">
+        Skip
+        <span class="glyphicon glyphicon-remove-circle"></span>
+    </button>
+}
+else if (Model.DownloadStatus == "SKIP")
+{
+    <button class="downloadstatus btn btn-primary" data-episodeId="@Model.Id">
+        Want
+        <span class="glyphicon glyphicon-download"></span>
+    </button>
+}
+else
+{
+    @Model.DownloadStatus
+    <span class="glyphicon glyphicon-file"></span>
+}
+

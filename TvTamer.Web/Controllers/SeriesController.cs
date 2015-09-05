@@ -1,9 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using TvTamer.Core;
 using TvTamer.Core.Persistance;
 using System.Web.Mvc;
 using System.IO;
+using TvTamer.Web.Models;
 
 namespace TvTamer.Web.Controllers
 {
@@ -44,9 +46,26 @@ namespace TvTamer.Web.Controllers
         [HttpGet]
         public ActionResult Details(int id)
         {
-            var series = _context.TvSeries.Include(s => s.Episodes).FirstOrDefault(s => s.Id == id);
+            var series = _context.TvSeries.FirstOrDefault(s => s.Id == id);
 
-            return View(series);
+            if (series == null)
+                return RedirectToAction("Index", "Series");
+
+            var seasons = _context.QuerySql<int>($"select Distinct(Season) from TvEpisodes where seriesId = {series.Id} and Season > 0");
+
+            var minSeason = seasons.Min();
+
+            var episodes =
+                _context.TvEpisodes.Where(e => e.SeriesId == series.Id && e.Season == minSeason).OrderBy(e => e.Season).ThenBy(e => e.EpisodeNumber);
+            series.Episodes = episodes.ToList();
+
+            var model = new SeriesDetailsViewModel()
+            {
+                Series = series,
+                Seasons = seasons
+            };
+
+            return View(model);
         }
 
         [HttpPost]

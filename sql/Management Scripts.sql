@@ -1,0 +1,5 @@
+SELECT TOP 1000 e.[Id]      ,s.Name as SeriesName      ,e.[Title]      ,e.[Season]      ,e.[EpisodeNumber]      ,e.[FileName]      ,e.[Summary]      ,e.[FirstAired]      ,e.[SeriesId]      ,e.[DownloadStatus]  FROM [DevTvTamer].[dbo].[TvEpisodes] e  inner join [DevTvTamer].[dbo].[TvSeries] s  on s.Id = e.SeriesId  where e.FirstAired >= '6/1/2015' and e.FirstAired <= '7/15/2015' and DownloadStatus = 'WANT'  order by SeriesId, FirstAired
+--update tvepisode status
+--update [DevTvTamer].[dbo].[TvEpisodes] set DownloadStatus = 'HAVE'--where Id IN (4944)
+--update [DevTvTamer].[dbo].[TvEpisodes] set DownloadStatus = 'SKIP'--where Id IN (4991)--update [DevTvTamer].[dbo].[TvEpisodes] set DownloadStatus = 'WANT'--where Id IN (4636,4637)
+--Remove Tv Series--DELETE FROM [DevTvTamer].[dbo].[TvEpisodes]	where SeriesId = 59--DELETE FROM [DevTvTamer].[dbo].[TvSeries] where Id = 59
