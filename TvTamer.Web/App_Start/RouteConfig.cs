@@ -20,6 +20,12 @@ namespace TvTamer.Web
             );
 
             routes.MapRoute(
+                name: "Wanted Episodes",
+                url: "wanted",
+                defaults: new { controller = "Episode", action = "WantedEpisodes", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "SeriesView",
                 url: "show/details/{id}/{slug}",
                 defaults: new { controller = "Series", action = "Details", id = UrlParameter.Optional, slug = UrlParameter.Optional }
