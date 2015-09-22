@@ -1,0 +1,49 @@
+﻿@using TvTamer.Web.Controllers
+@model TvTamer.Web.Models.SeriesDetailsViewModel
+
+@{
+    ViewBag.Title = Model.Series.Name;
+}
+
+<input type="hidden" id="seriesId" value="@Model.Series.Id"/>
+<h1>@Model.Series.Name</h1>
+<p>
+    @Model.Series.Summary
+</p>
+<div class="row">
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">Airs: @Model.Series.AirsDayOfWeek at @Model.Series.AirsTimeOfDay</li>
+            <li class="list-group-item">Network: @Model.Series.Network</li>
+            <li class="list-group-item">Rating: @Model.Series.Rating</li>
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <ul class="list-group">
+            <li class="list-group-item">First Aired: @Model.Series.FirstAired.ToString("MMM dd, yyyy")</li>
+            <li class="list-group-item">Status : @Model.Series.Status</li>
+        </ul>
+    </div>
+</div>
+
+@if (Model.Series.Episodes.Any())
+{
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Episodes</h3>
+        </div>
+        <div class="col-md-6">
+            @if (Model.Seasons.Any())
+            {
+                <select id="season" class="pull-right" style="line-height: 1.1; margin-top: 20px; margin-bottom: 10px;">
+                    @foreach (var season in Model.Seasons)
+                    {
+                        <option value="@season">Season @season</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+    @Html.Partial("_EpisodeList", Model.Series.Episodes)
+}
+

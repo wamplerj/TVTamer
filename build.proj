@@ -1,0 +1,35 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+	<PropertyGroup>
+        <Configuration Condition="$(Configuration)==''">Debug</Configuration>
+        <MSBuildCommunityTasksPath>$(MSBuildStartupDirectory)\.build</MSBuildCommunityTasksPath>
+        <BuildDir>$(MSBuildStartupDirectory)\.build\</BuildDir>
+
+	    <SolutionProperties>
+	      OutDir=$(BuildDir);
+	      Platform=Any CPU;
+	      Configuration=$(Configuration)
+	    </SolutionProperties>
+    </PropertyGroup>
+
+    <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+
+    <ItemGroup>
+        <Solution Include="TVTamer.sln">
+            <Properties>
+                $(SolutionProperties)
+            </Properties>
+        </Solution>
+    </ItemGroup>
+
+    <Target Name="Build">
+        <MSBuild Projects="@(Solution)" />
+    </Target>
+
+    <Target Name="RunUnitTests" DependsOnTargets="Build">
+	    <CreateItem Include="$(OutDir)*.Tests.dll">
+	      <Output TaskParameter="Include" ItemName="TestAssembly" />
+	    </CreateItem>
+    	<Nunit Assemblies="@(TestAssembly)" ToolPath="$(MSBuildStartupDirectory)\packages\NUnit.Runners.2.6.4\tools" OutputXmlFile="$(MSBuildStartupDirectory)\.tests\unittestresults.xml" />
+    </Target>
+
+</Project>

@@ -1,0 +1,8 @@
+﻿@model List<TvTamer.Core.Models.TvEpisode>
+
+@{
+    ViewBag.Title = "Wanted Episodes";
+}
+
+<h2>@ViewBag.Title</h2>
+@Html.Partial("_SeriesEpisodeList", Model)

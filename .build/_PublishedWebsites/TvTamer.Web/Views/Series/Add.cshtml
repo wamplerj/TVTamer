@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Add New Series";
+}
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("Add", "Series", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+
+    <input type="text" name="seriesName" id="seriesName" />
+    <input type="submit" value="Search" />
+
+}

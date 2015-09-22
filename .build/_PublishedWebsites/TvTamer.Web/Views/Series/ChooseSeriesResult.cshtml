@@ -1,0 +1,20 @@
+﻿@using TvTamer.Core.Models
+@model IEnumerable<TvTamer.Core.Models.TvSeries>
+
+@{
+    ViewBag.Title = "Choose Series from Search Results";
+}
+
+@using (Html.BeginForm("Save", "Series", FormMethod.Post))
+{
+
+    <h2>@ViewBag.Title</h2>
+    <ul>
+        @foreach (var series in Model)
+        {
+            <li><input type="radio" name="seriesId" value="@series.SeriesId"/>@series.Name (@series.FirstAired.ToShortDateString())</li>
+        }
+    </ul>
+
+    <input type="submit" value="Add TV Series"/>
+}
