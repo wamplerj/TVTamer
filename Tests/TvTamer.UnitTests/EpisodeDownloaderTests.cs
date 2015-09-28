@@ -34,7 +34,7 @@ namespace TvTamer.UnitTests
             var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" });
             downloader.DownloadWantedEpisodes();
 
-            webRequester.Verify(wr => wr.DownloadFileAsync(torrent.DownloadUrl, "WatchFolder\\Torrent.torrent"), Times.Once);
+            webRequester.Verify(wr => wr.DownloadFileAsync(torrent.DownloadUrl, "WatchFolder\\Torrent.torrent", null), Times.Once);
         }
 
 

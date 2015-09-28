@@ -50,7 +50,7 @@ namespace TvTamer.Core.Persistance
                     return;
                 }
 
-                currentSeries.Name = updatedSeries.Name;
+                currentSeries.Name = updatedSeries.Name.Trim(new []{'.'});
                 currentSeries.Network = updatedSeries.Network;
                 currentSeries.AirsDayOfWeek = updatedSeries.AirsDayOfWeek;
                 currentSeries.AirsTimeOfDay = updatedSeries.AirsTimeOfDay;
@@ -67,9 +67,12 @@ namespace TvTamer.Core.Persistance
                         currentSeries.Episodes.FirstOrDefault(
                             e => e.Season == episode.Season && e.EpisodeNumber == episode.EpisodeNumber);
 
-                    if (currentEpisode == null)
+                    if (currentEpisode == null )
                     {
-                        episode.DownloadStatus = "WANT";
+
+                        if (episode.Season > 0 && episode.EpisodeNumber > 0)
+                            episode.DownloadStatus = "WANT";
+
                         currentSeries.Episodes.Add(episode);
                         continue;
                     }

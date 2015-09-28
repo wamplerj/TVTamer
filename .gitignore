@@ -22,6 +22,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 .[Ff]ake
+.[Bb]uild
+.[Tt]ests
 
 # Visual Studo 2015 cache/options directory
 .vs/

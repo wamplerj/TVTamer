@@ -7,8 +7,8 @@ namespace TvTamer.Core
 {
     public interface IWebRequester
     {
-        XmlDocument GetXml(string url);
-        void DownloadFileAsync(string url, string filePath);
+        XmlDocument GetXml(string url, string referer = null);
+        void DownloadFileAsync(string url, string filePath, string referer = null);
     }
 
     public class WebRequester : IWebRequester
@@ -16,12 +16,16 @@ namespace TvTamer.Core
 
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        public XmlDocument GetXml(string url)
+        public XmlDocument GetXml(string url, string referer = null)
         {
 
             _logger.Info($"Getting XML from url: {url}");
 
             var client = new GZipWebClient();
+
+            if (!string.IsNullOrEmpty(referer))
+                client.Headers.Add("Referer", referer);
+
             var xmlDoc = new XmlDocument();
 
             try
@@ -38,9 +42,12 @@ namespace TvTamer.Core
 
         }
 
-        public void DownloadFileAsync(string url, string filePath)
+        public void DownloadFileAsync(string url, string filePath, string referer = null)
         {
             var webclient = new GZipWebClient();
+
+            if(!string.IsNullOrEmpty(referer))
+                webclient.Headers.Add("Referer", referer);
 
             try
             {
@@ -57,7 +64,7 @@ namespace TvTamer.Core
         {
             protected override WebRequest GetWebRequest(Uri address)
             {
-                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+                var request = (HttpWebRequest)base.GetWebRequest(address);
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 return request;
             }

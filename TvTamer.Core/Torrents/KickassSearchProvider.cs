@@ -29,7 +29,7 @@ namespace TvTamer.Core.Torrents
 
             //TODO Get query string from config file
             var url = $"https://kat.cr/usearch/{encodedSearch}/?field=seeders&sorder=desc&rss=1";
-            var xml = _webRequester.GetXml(url);
+            var xml = _webRequester.GetXml(url, "http://torcache.net");
 
             var nodes = xml?.SelectNodes("rss/channel/item");
 
@@ -38,24 +38,33 @@ namespace TvTamer.Core.Torrents
 
             foreach (XmlNode node in nodes)
             {
+                var torrent = BuildTorrent(node);
 
-                var name = node["title"]?.InnerText;
-
-                if (_ignoreWords.Any(name.Contains)) continue;
-
-                var torrent = new Torrent
-                {
-                    Name = name,
-                    PublicationDate = Convert.ToDateTime(node["pubDate"].InnerText),
-                    PageUrl = node["guid"].InnerText,
-                    MagnetUrl = node["torrent:magnetURI"].InnerText,
-                    DownloadUrl = node["enclosure"].Attributes["url"].InnerText
-                };
-
+                if(torrent == null) continue;
                 return torrent;
             }
 
             return NextSearchProvider.GetTorrent(search);
+        }
+
+        private Torrent BuildTorrent(XmlNode node)
+        {
+            var name = node["title"]?.InnerText;
+
+            if (_ignoreWords.Any(name.Contains)) return null;
+
+            var downloadUrl = node["enclosure"].Attributes["url"].InnerText;
+
+            var torrent = new Torrent
+            {
+                Name = name,
+                PublicationDate = Convert.ToDateTime(node["pubDate"].InnerText),
+                PageUrl = node["guid"].InnerText,
+                MagnetUrl = node["torrent:magnetURI"].InnerText,
+                DownloadUrl = downloadUrl
+            };
+
+            return torrent;
         }
 
         public ISearchProvider NextSearchProvider { get; }

@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="KickassSearchProviderTests.cs" />
     <Compile Include="TorrentSearchChainTests.cs" />
     <Compile Include="TvEpisodeFilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
