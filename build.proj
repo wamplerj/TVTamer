@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
 	<PropertyGroup>
         <Configuration Condition="$(Configuration)==''">Debug</Configuration>
-        <MSBuildCommunityTasksPath>$(MSBuildStartupDirectory)\.build</MSBuildCommunityTasksPath>
+        <MSBuildCommunityTasksPath>$(MSBuildStartupDirectory)\packages\MSBuildTasks.1.4.0.88\tools</MSBuildCommunityTasksPath>
         <BuildDir>$(MSBuildStartupDirectory)\.build\</BuildDir>
 
 	    <SolutionProperties>
