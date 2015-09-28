@@ -14,6 +14,11 @@ namespace TvTamer.Web
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/chartjs").Include(
+                        "~/scripts/chart.js"));
+
+
+
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
@@ -28,6 +33,7 @@ namespace TvTamer.Web
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/tvtamer.js").Include("~/Scripts/series.js"));
+
         }
     }
 }
