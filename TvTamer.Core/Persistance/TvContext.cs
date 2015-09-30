@@ -35,8 +35,8 @@ namespace TvTamer.Core.Persistance
         {
             modelBuilder.Configurations.Add(new TvSeriesMap());
             modelBuilder.Configurations.Add(new TvEpisodeMap());
+            modelBuilder.Configurations.Add(new AlternateNameMap());
             modelBuilder.Configurations.Add(new LoggedEventMap());
-
         }
 
     }

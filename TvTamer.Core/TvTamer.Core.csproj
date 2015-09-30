@@ -74,6 +74,11 @@
     <Compile Include="Migrations\201506091955239_Fix.Designer.cs">
       <DependentUpon>201506091955239_Fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509301509175_AlternateNames.cs" />
+    <Compile Include="Migrations\201509301509175_AlternateNames.Designer.cs">
+      <DependentUpon>201509301509175_AlternateNames.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AlternateName.cs" />
     <Compile Include="Persistance\DatabaseUpdater.cs" />
     <Compile Include="FileSystem\Directory.cs" />
     <Compile Include="FileSystem\File.cs" />
@@ -104,6 +109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506091955239_Fix.resx">
       <DependentUpon>201506091955239_Fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301509175_AlternateNames.resx">
+      <DependentUpon>201509301509175_AlternateNames.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

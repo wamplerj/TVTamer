@@ -25,7 +25,10 @@ namespace TvTamer.Core.Models
         public string Rating { get; set; }
         public DateTime LastUpdated { get; set; }
         public List<TvEpisode> Episodes { get; set; } = new List<TvEpisode>();
-        public List<string>  Genres { get; set; }
+        public List<string> Genres { get; set; }
+
+        public List<AlternateName> AlternateNames { get; set; }
+
     }
 
     public class TvSeriesMap : EntityTypeConfiguration<TvSeries>
@@ -40,7 +43,8 @@ namespace TvTamer.Core.Models
             this.Property(t => t.FirstAired).IsRequired();
             this.Property(t => t.LastUpdated).IsRequired();
 
-            HasMany(c => c.Episodes);
+            HasMany(t => t.Episodes);
+            HasMany(t => t.AlternateNames);
         }
 
     }

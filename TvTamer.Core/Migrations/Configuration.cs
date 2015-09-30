@@ -9,7 +9,7 @@ namespace TvTamer.Core.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
             ContextKey = "TvTamer.Core.Persistance.TvContext";
         }
 
