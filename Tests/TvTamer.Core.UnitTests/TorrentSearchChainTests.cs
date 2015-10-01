@@ -46,7 +46,7 @@ namespace TvTamer.Core.UnitTests
             document.LoadXml(xml);
 
             var webRequestor = new Mock<IWebRequester>();
-            webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), null)).Returns(document);
+            webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), It.IsAny<string>())).Returns(document);
 
             var nullSearchProvider = new NullSearchProvider();
             var katSearchProvider = new KickassSearchProvider(nullSearchProvider, webRequestor.Object);
@@ -79,7 +79,7 @@ namespace TvTamer.Core.UnitTests
             document.LoadXml(xml);
 
             var webRequestor = new Mock<IWebRequester>();
-            webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), null)).Returns(document);
+            webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), It.IsAny<string>())).Returns(document);
 
             var nullSearchProvider = new NullSearchProvider();
             var katSearchProvider = new KickassSearchProvider(nullSearchProvider, webRequestor.Object);

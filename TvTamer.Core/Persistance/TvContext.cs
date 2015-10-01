@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using NLog;
 using TvTamer.Core.Models;
 
 namespace TvTamer.Core.Persistance
@@ -11,16 +13,30 @@ namespace TvTamer.Core.Persistance
         IDbSet<TvSeries> TvSeries { get; set; }
         IDbSet<TvEpisode> TvEpisodes { get; set; }
         IDbSet<LoggedEvent> LoggedEvents { get; set; }
+        DbSet<T> Set<T>() where T: class;
 
         List<T> QuerySql<T>(string query);
+        
         int SaveChanges();
     }
 
     public class TvContext : DbContext, ITvContext
     {
+        public TvContext()
+        {
+#if DEBUG
+            Database.Log = s => Debug.WriteLine(s);
+#endif
+        }
+
         public IDbSet<TvSeries> TvSeries { get; set; }
         public IDbSet<TvEpisode> TvEpisodes { get; set; }
         public IDbSet<LoggedEvent> LoggedEvents { get; set; }
+        public override DbSet<T> Set<T>()
+        {
+            return this.Set<T>();
+        }
+
         public List<T> QuerySql<T>(string query)
         {
             return Database.SqlQuery<T>(query).ToList();

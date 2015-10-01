@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Moq;
 using NUnit.Framework;
+using TvTamer.Core;
 using TvTamer.Core.Configuration;
 using TvTamer.Core.FileSystem;
 using TvTamer.Core.Models;
@@ -30,11 +31,11 @@ namespace TvTamer.UnitTests
             var source = new Mock<IDirectory>();
             var destination = new Mock<IDirectory>();
 
-            var fileSystemFactory = new Mock<IFileSystemFactory>();
-            fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
-            fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
+            var fileSystem = new Mock<IFileSystem>();
+            fileSystem.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
+            fileSystem.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
 
-            var processor = new EpisodeProcessor(_settings, null, fileSystemFactory.Object);
+            var processor = new EpisodeProcessor(_settings, null, fileSystem.Object);
             processor.ProcessDownloadedEpisodes();
 
             source.Verify(s => s.EnumerateFiles(It.IsAny<string>(), true), Times.AtLeastOnce);
@@ -66,30 +67,12 @@ namespace TvTamer.UnitTests
             var fileSystemFactory = GetFileSystemFactory(source, destination, seriesDestinationFolder, "DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS.mp4", episodeFile);
 
             var episode = new TvEpisode() {Season = 5, EpisodeNumber = 12, Title = "Some Title"};
-            var series = new TvSeries() {Name = "The Walking Dead"};
-            series.Episodes.Add(episode);
 
-            var episodeQueryable = new List<TvEpisode> { episode }.AsQueryable();
-            var seriesQueryable = new List<TvSeries> { series }.AsQueryable();
-            
-            var seriesSet = new Mock<MockableDbSetWithExtensions<TvSeries>>();
-            seriesSet.As<IQueryable<TvSeries>>().Setup(m => m.Provider).Returns(seriesQueryable.Provider);
-            seriesSet.As<IQueryable<TvSeries>>().Setup(m => m.Expression).Returns(seriesQueryable.Expression);
-            seriesSet.As<IQueryable<TvSeries>>().Setup(m => m.ElementType).Returns(seriesQueryable.ElementType);
-            seriesSet.As<IQueryable<TvSeries>>().Setup(m => m.GetEnumerator()).Returns(seriesQueryable.GetEnumerator());
-            seriesSet.Setup(ss => ss.Include(It.IsAny<string>())).Returns(seriesSet.Object);
+            var tvService = new Mock<ITvService>();
+            tvService.Setup(ts => ts.GetEpisodeBySeriesName(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), true))
+                .Returns(episode);
 
-            var episodeSet = new Mock<MockableDbSetWithExtensions<TvEpisode>>();
-            episodeSet.As<IQueryable<TvEpisode>>().Setup(m => m.Provider).Returns(episodeQueryable.Provider);
-            episodeSet.As<IQueryable<TvEpisode>>().Setup(m => m.Expression).Returns(episodeQueryable.Expression);
-            episodeSet.As<IQueryable<TvEpisode>>().Setup(m => m.ElementType).Returns(episodeQueryable.ElementType);
-            episodeSet.As<IQueryable<TvEpisode>>().Setup(m => m.GetEnumerator()).Returns(episodeQueryable.GetEnumerator());
-
-            var context = new Mock<ITvContext>();
-            context.Setup(c => c.TvSeries).Returns(seriesSet.Object);
-            context.Setup(c => c.TvEpisodes).Returns(episodeSet.Object);
-
-            var processor = new EpisodeProcessor(_settings, context.Object, fileSystemFactory.Object);
+            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object);
             processor.ProcessDownloadedEpisodes();
 
             source.Verify(s => s.EnumerateFiles(It.IsAny<string>(), true), Times.AtLeastOnce);
@@ -97,9 +80,9 @@ namespace TvTamer.UnitTests
 
             //Validate Source File was copied
             episodeFile.Verify(ef => ef.Copy(It.IsAny<string>()), Times.Once);
-            
+
             //Validate Episode was updated in database
-            context.Verify(c => c.SaveChanges(), Times.Once);
+            tvService.Verify(c => c.SaveChanges(), Times.Once);
 
             episodeFile.Verify(ef => ef.Delete(), Times.Once);
         }
@@ -125,9 +108,9 @@ namespace TvTamer.UnitTests
             var fileSystemFactory = GetFileSystemFactory(source, destination, seriesDestinationFolder, file, episodeFile);
             fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS")).Returns(sourceEpisodeFolder.Object);
 
-            var context = new Mock<ITvContext>();
+            var tvService = new Mock<ITvService>();
 
-            var processor = new EpisodeProcessor(_settings, context.Object, fileSystemFactory.Object);
+            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object);
             processor.DeleteSourceFile(file);
 
             sourceEpisodeFolder.Verify(sef => sef.Delete(true), Times.Once);
@@ -135,9 +118,9 @@ namespace TvTamer.UnitTests
 
 
         }
-        private Mock<IFileSystemFactory> GetFileSystemFactory(Mock<IDirectory> source, Mock<IDirectory> destination, Mock<IDirectory> seriesDestinationFolder, string episodeFilePath, Mock<IFile> episodeFile)
+        private Mock<IFileSystem> GetFileSystemFactory(Mock<IDirectory> source, Mock<IDirectory> destination, Mock<IDirectory> seriesDestinationFolder, string episodeFilePath, Mock<IFile> episodeFile)
         {
-            var fileSystemFactory = new Mock<IFileSystemFactory>();
+            var fileSystemFactory = new Mock<IFileSystem>();
             fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
             fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
             fileSystemFactory.Setup(fsf => fsf.GetDirectory("TvLibFolder\\The Walking Dead\\Season 05\\"))
@@ -146,12 +129,6 @@ namespace TvTamer.UnitTests
                 fsf => fsf.GetFile(episodeFilePath))
                 .Returns(episodeFile.Object);
             return fileSystemFactory;
-        }
-
-        public abstract class MockableDbSetWithExtensions<T> : DbSet<T> where T : class
-        {
-            public abstract void AddOrUpdate(params T[] entities);
-            public abstract void AddOrUpdate(Expression<Func<T, object>> identifierExpression, params T[] entities);
         }
 
     }

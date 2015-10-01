@@ -25,7 +25,8 @@ namespace TvTamer
             builder.RegisterType<EpisodeDownloader>().As<IEpisodeDownloader>();
             builder.RegisterType<WebRequester>().As<IWebRequester>();
             builder.RegisterType<TvContext>().As<ITvContext>();
-            builder.RegisterType<FileSystemFactory>().As<IFileSystemFactory>();
+            builder.RegisterType<TvService>().As<ITvService>();
+            builder.RegisterType<FileSystem>().As<IFileSystem>();
 
             builder.RegisterType<EpisodeProcessor>().As<IEpisodeProcessor>();
 

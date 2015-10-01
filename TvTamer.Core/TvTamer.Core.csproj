@@ -59,7 +59,7 @@
     <Compile Include="Configuration\EpisodeProcessorSettings.cs" />
     <Compile Include="Configuration\ScheduleSettings.cs" />
     <Compile Include="Configuration\TorrentSearchSettings.cs" />
-    <Compile Include="FileSystem\FileSystemFactory.cs" />
+    <Compile Include="FileSystem\FileSystem.cs" />
     <Compile Include="FileSystem\IDirectory.cs" />
     <Compile Include="FileSystem\IFile.cs" />
     <Compile Include="Migrations\201505072222346_InitialCreate.cs" />
@@ -94,6 +94,7 @@
     <Compile Include="TvEpisodeFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TvDbSearchService.cs" />
+    <Compile Include="TvService.cs" />
     <Compile Include="WebRequester.cs" />
   </ItemGroup>
   <ItemGroup>
