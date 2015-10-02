@@ -31,17 +31,17 @@ namespace TvTamer.Core.Persistance
 
             var seriesList = _context.TvSeries
                 .Where(s => SqlFunctions.DateDiff("day", s.LastUpdated, DateTime.Now) >= 7)
-                .Select(s => new {s.Id, s.SeriesId, s.Name ,s.LastUpdated}).ToList();
+                .Select(s => new {s.Id, s.TvDbSeriesId, s.Name ,s.LastUpdated}).ToList();
 
             foreach (var series in seriesList)
             {
 
-                if (!_searchService.HasUpdates(series.SeriesId, series.LastUpdated)) continue;
+                if (!_searchService.HasUpdates(series.TvDbSeriesId, series.LastUpdated)) continue;
 
                 _logger.Info("Updates found for Series: {0}", series.Name);
 
-                var currentSeries = _context.TvSeries.Include(s => s.Episodes).FirstOrDefault(s => s.SeriesId == series.SeriesId);
-                var updatedSeries = _searchService.GetTvSeries(series.SeriesId);
+                var currentSeries = _context.TvSeries.Include(s => s.Episodes).FirstOrDefault(s => s.TvDbSeriesId == series.TvDbSeriesId);
+                var updatedSeries = _searchService.GetTvSeries(series.TvDbSeriesId);
 
                 if (currentSeries == null)
                 {
@@ -83,7 +83,7 @@ namespace TvTamer.Core.Persistance
                    
                 }
 
-                _context.TvSeries.AddOrUpdate(t => t.SeriesId, currentSeries);
+                _context.TvSeries.AddOrUpdate(t => t.TvDbSeriesId, currentSeries);
             }
 
             _context.SaveChanges();

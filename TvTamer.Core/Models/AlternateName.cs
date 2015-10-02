@@ -21,7 +21,6 @@ namespace TvTamer.Core.Models
                 .HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("IX_TVSeriesAlternateName", 1) { IsUnique = true })); ;
 
             this.Property(t => t.SortOrder).IsRequired();
-
         }
 
     }

@@ -32,10 +32,6 @@ namespace TvTamer.Core.Persistance
         public IDbSet<TvSeries> TvSeries { get; set; }
         public IDbSet<TvEpisode> TvEpisodes { get; set; }
         public IDbSet<LoggedEvent> LoggedEvents { get; set; }
-        public override DbSet<T> Set<T>()
-        {
-            return this.Set<T>();
-        }
 
         public List<T> QuerySql<T>(string query)
         {

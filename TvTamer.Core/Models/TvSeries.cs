@@ -14,7 +14,7 @@ namespace TvTamer.Core.Models
     {
 
         public int Id { get; set; }
-        public string SeriesId { get; set; }
+        public string TvDbSeriesId { get; set; }
         public string Name { get; set; }
         public DateTime FirstAired { get; set; }
         public DayOfWeek AirsDayOfWeek { get; set; }
@@ -37,14 +37,14 @@ namespace TvTamer.Core.Models
         public TvSeriesMap()
         {
             this.HasKey(t => t.Id);
-            this.Property(t => t.SeriesId).HasMaxLength(50).IsRequired()
-                .HasColumnAnnotation(IndexAnnotation.AnnotationName,new IndexAnnotation(new IndexAttribute("IX_SeriesId", 1) { IsUnique = true }));
+            this.Property(t => t.TvDbSeriesId).HasMaxLength(50).IsRequired()
+                .HasColumnAnnotation(IndexAnnotation.AnnotationName,new IndexAnnotation(new IndexAttribute("IX_TvDbSeriesId", 1) { IsUnique = true }));
             this.Property(t => t.Name).HasMaxLength(255).IsRequired();
             this.Property(t => t.FirstAired).IsRequired();
             this.Property(t => t.LastUpdated).IsRequired();
 
             HasMany(t => t.Episodes);
-            HasMany(t => t.AlternateNames);
+            HasMany(t => t.AlternateNames).WithOptional().Map( t => t.MapKey("SeriesId"));
         }
 
     }

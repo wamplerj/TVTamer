@@ -22,9 +22,9 @@ namespace TvTamer.Web.App_Start
             // Register your MVC controllers.
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
 
-
             builder.RegisterType<TvDbSearchService>().As<ITvSearchService>();
             builder.RegisterType<TvContext>().As<ITvContext>();
+            builder.RegisterType<TvService>().As<ITvService>();
 
             //// OPTIONAL: Register model binders that require DI.
             //builder.RegisterModelBinders(Assembly.GetExecutingAssembly());

@@ -22,6 +22,16 @@
         <ul class="list-group">
             <li class="list-group-item">First Aired: @Model.Series.FirstAired.ToString("MMM dd, yyyy")</li>
             <li class="list-group-item">Status : @Model.Series.Status</li>
+            @if (Model.Series.AlternateNames.Any())
+            {
+                <li class="list-group-item">
+                    Alternate Names :
+                    @foreach (var alternateName in Model.Series.AlternateNames)
+                    {
+                        @Html.Raw(string.Format("{0}{1}", alternateName.Name, ","));
+                    }
+                </li>
+            }
         </ul>
     </div>
 </div>

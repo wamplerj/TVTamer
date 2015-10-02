@@ -12,17 +12,17 @@ namespace TvTamer.Web.Controllers
     public class SeriesController : Controller
     {
         private readonly ITvSearchService _searchService;
-        private readonly ITvContext _context;
+        private readonly ITvService _service;
 
-        public SeriesController(ITvSearchService searchService, ITvContext context)
+        public SeriesController(ITvSearchService searchService, ITvService service)
         {
             _searchService = searchService;
-            _context = context;
+            _service = service;
         }
 
         public ActionResult Index()
         {
-            var series = _context.TvSeries.OrderBy(s => s.Name).ToList();
+            var series = _service.GetTvSeries();
 
             return View(series);
         }
@@ -46,18 +46,17 @@ namespace TvTamer.Web.Controllers
         [HttpGet]
         public ActionResult Details(int id)
         {
-            var series = _context.TvSeries.FirstOrDefault(s => s.Id == id);
+            var series = _service.GetTvSeriesById(id);
 
             if (series == null)
                 return RedirectToAction("Index", "Series");
 
-            var seasons = _context.QuerySql<int>($"select Distinct(Season) from TvEpisodes where seriesId = {series.Id} and Season > 0");
+            var seasons = _service.GetSeasons(id);
+            seasons.Reverse();
+            var lastSeason = seasons.Max();
 
-            var minSeason = seasons.Min();
-
-            var episodes =
-                _context.TvEpisodes.Where(e => e.SeriesId == series.Id && e.Season == minSeason).OrderBy(e => e.Season).ThenBy(e => e.EpisodeNumber);
-            series.Episodes = episodes.ToList();
+            var episodes = _service.GetEpisodesBySeason(id, lastSeason);
+            series.Episodes = episodes;
 
             var model = new SeriesDetailsViewModel()
             {
@@ -72,39 +71,8 @@ namespace TvTamer.Web.Controllers
         public ActionResult Save(string seriesId)
         {
             var series = _searchService.GetTvSeries(seriesId);
-
-            _context.TvSeries.Add(series);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-
-        }
-
-        [HttpPost]
-        public ActionResult ImportDirectory()
-        {
-
-            var seriesFolders = Directory.GetDirectories(@"\\wampler-server\Storage\Media\TV");
-
-            foreach (var seriesFolder in seriesFolders)
-            {
-
-                var showName = seriesFolder.Split('\\').Last();
-
-                if (showName.Contains('\\')) continue;
-
-                var tvShows = _searchService.FindTvSeries(showName).ToList();
-
-                if (!tvShows.Any()) continue;
-
-                var tvSeries = _searchService.GetTvSeries(tvShows[0].SeriesId);
-
-                if (tvSeries == null) continue;
-
-                _context.TvSeries.Add(tvSeries);
-            }
-
-            _context.SaveChanges();
+            _service.AddOrUpdate(series);
+            _service.SaveChanges();
 
             return RedirectToAction("Index");
 
