@@ -1,35 +1,54 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
 	<PropertyGroup>
         <Configuration Condition="$(Configuration)==''">Debug</Configuration>
-        <MSBuildCommunityTasksPath>$(MSBuildStartupDirectory)\packages\MSBuildTasks.1.4.0.88\tools</MSBuildCommunityTasksPath>
+        <MSBuildCommunityTasksPath>$(MSBuildStartupDirectory)\tools\MSBuildTasks.1.4.0.88\tools</MSBuildCommunityTasksPath>
         <BuildDir>$(MSBuildStartupDirectory)\.build\</BuildDir>
+        <PackageDir>$(MSBuildStartupDirectory)\packages\</PackageDir>
+  </PropertyGroup>
 
-	    <SolutionProperties>
-	      OutDir=$(BuildDir);
-	      Platform=Any CPU;
-	      Configuration=$(Configuration)
-	    </SolutionProperties>
-    </PropertyGroup>
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
 
-    <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+  <ItemGroup>
+    <Solution Include="TVTamer.sln" />
+    <OutputPackages Include="$(MSBuildStartupDirectory)*.nupkg" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Solution Include="TVTamer.sln">
-            <Properties>
-                $(SolutionProperties)
-            </Properties>
-        </Solution>
-    </ItemGroup>
+  <PropertyGroup>
+    <Platform>AnyCPU</Platform>
+    <Configuration>Release</Configuration>
+  </PropertyGroup>
 
-    <Target Name="Build">
-        <MSBuild Projects="@(Solution)" />
-    </Target>
+  <Target Name="Clean">
+    <RemoveDir Directories="$(BuildDir)" />
+    <RemoveDir Directories="$(PackageDir)" /> 
+  </Target>
 
-    <Target Name="RunUnitTests" DependsOnTargets="Build">
-	    <CreateItem Include="$(OutDir)*.Tests.dll">
-	      <Output TaskParameter="Include" ItemName="TestAssembly" />
-	    </CreateItem>
-    	<Nunit Assemblies="@(TestAssembly)" ToolPath="$(MSBuildStartupDirectory)\packages\NUnit.Runners.2.6.4\tools" OutputXmlFile="$(MSBuildStartupDirectory)\.tests\unittestresults.xml" />
-    </Target>
+  <Target Name="RestoreNugetPackages" DependsOnTargets="Clean">
+    <Exec  Command=".\tools\nuget.exe restore" />
+  </Target>
+
+  <!-- Gets the projects composing the specified solution -->
+  <Target Name="GetProjectsFromSolution" DependsOnTargets="RestoreNugetPackages">
+    <GetSolutionProjects Solution="%(Solution.Fullpath)">
+      <Output ItemName="ProjectFiles" TaskParameter="Output"/>
+    </GetSolutionProjects>
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="GetProjectsFromSolution">
+    <MSBuild Projects="%(ProjectFiles.Fullpath)"
+             Properties="Platform=$(Platform);
+             Configuration=$(Configuration);
+             OutDir=$(BuildDir)\%(ProjectFiles.Filename)\;
+             AllowedReferenceRelatedFileExtensions=none;"
+             Targets="Build">
+    </MSBuild>
+  </Target>
+  
+  <Target Name="RunUnitTests" DependsOnTargets="Build">
+	  <CreateItem Include="$(OutDir)*.Tests.dll">
+	    <Output TaskParameter="Include" ItemName="TestAssembly" />
+	  </CreateItem>
+    <Nunit Assemblies="@(TestAssembly)" ToolPath="$(MSBuildStartupDirectory)\packages\NUnit.Runners.2.6.4\tools" OutputXmlFile="$(MSBuildStartupDirectory)\.tests\unittestresults.xml" />
+  </Target>
 
 </Project>
