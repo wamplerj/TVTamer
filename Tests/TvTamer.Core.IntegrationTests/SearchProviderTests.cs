@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using TvTamer.Core.Torrents;
 
 namespace TvTamer.Core.IntegrationTests
@@ -10,7 +11,9 @@ namespace TvTamer.Core.IntegrationTests
         [Test]
         public void KickAssSearchProvider_Returns_First_Value()
         {
-            var searchProvider = new KickassSearchProvider(new NullSearchProvider(), new WebRequester());
+            var analyticService = new Mock<IAnalyticsService>();
+
+            var searchProvider = new KickassSearchProvider(new NullSearchProvider(), new WebRequester(analyticService.Object), analyticService.Object);
 
             var result = searchProvider.GetTorrent("the big bang theory s01e01 720");
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using TvTamer.Core;
@@ -22,17 +23,19 @@ namespace TvTamer
         private readonly EpisodeProcessorSettings _settings;
         private readonly ITvService _tvService;
         private readonly IFileSystem _fileSystem;
+        private readonly IAnalyticsService _analyticsService;
 
         private readonly IDirectory _sourceFolder;
         private readonly IDirectory _destinationFolder;
 
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        public EpisodeProcessor(EpisodeProcessorSettings settings, ITvService tvService, IFileSystem fileSystem)
+        public EpisodeProcessor(EpisodeProcessorSettings settings, ITvService tvService, IFileSystem fileSystem, IAnalyticsService analyticsService)
         {
             _settings = settings;
             _tvService = tvService;
             _fileSystem = fileSystem;
+            _analyticsService = analyticsService;
 
             _sourceFolder = _fileSystem.GetDirectory(_settings.DownloadFolder);
             _destinationFolder = _fileSystem.GetDirectory(_settings.TvLibraryFolder);
@@ -104,9 +107,16 @@ namespace TvTamer
 
             //TODO Refactor episode file naming somewhere centralized.
             var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {foundEpisode.Title}{sourceFile.Extension}";
-
-            sourceFile.Copy(destinationFilename);
+            try
+            {
+                sourceFile.Copy(destinationFilename);
+            }
+            catch (Exception ex)
+            {
+                _analyticsService.ReportEvent(AnalyticEvent.EpisodeFailed, $"Unable to copy {sourceFile} to {destinationFilename}");
+            }
             _logger.Info($"Copying {sourceFile} to {destinationFilename}");
+            _analyticsService.ReportEvent(AnalyticEvent.Episode, $"Copying {sourceFile} to {destinationFilename}");
 
             foundEpisode.FileName = destinationFilename;
             foundEpisode.DownloadStatus = "HAVE";

@@ -59,14 +59,17 @@ namespace TvTamer.Core.FileSystem
             catch (UnauthorizedAccessException auth)
             {
                 _logger.ErrorException($"Access Denied.  Could not copy file to {destinationFilename}", auth);
+                throw;
             }
             catch (FileNotFoundException file)
             {
                 _logger.ErrorException($"Directory Not Found.  Could not copy file to {destinationFilename}", file);
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.ErrorException($"Could not copy file to {destinationFilename}", ex);
+                throw;
             }
         }
     }

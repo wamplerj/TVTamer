@@ -25,6 +25,7 @@ namespace TvTamer.Web.App_Start
             builder.RegisterType<TvDbSearchService>().As<ITvSearchService>();
             builder.RegisterType<TvContext>().As<ITvContext>();
             builder.RegisterType<TvService>().As<ITvService>();
+            builder.RegisterType<AnalyticsService>().As<IAnalyticsService>();
 
             //// OPTIONAL: Register model binders that require DI.
             //builder.RegisterModelBinders(Assembly.GetExecutingAssembly());

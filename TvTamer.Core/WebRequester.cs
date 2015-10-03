@@ -13,6 +13,12 @@ namespace TvTamer.Core
 
     public class WebRequester : IWebRequester
     {
+        private readonly IAnalyticsService _analyticsService;
+
+        public WebRequester(IAnalyticsService analyticsService)
+        {
+            _analyticsService = analyticsService;
+        }
 
         private readonly Logger _logger = LogManager.GetLogger("log");
 
@@ -53,10 +59,13 @@ namespace TvTamer.Core
             {
                 _logger.Info($"Downloading file: {url} and saving to {filePath}");
                 webclient.DownloadFileAsync(new Uri(url), filePath);
+
+                _analyticsService.ReportEvent(AnalyticEvent.Download, url);
             }
             catch (WebException ex)
             {
                 _logger.Error(ex);
+                _analyticsService.ReportEvent(AnalyticEvent.DownloadFailed, url);
             }
         }
 

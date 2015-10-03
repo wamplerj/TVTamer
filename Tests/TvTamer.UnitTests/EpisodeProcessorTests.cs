@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq;
 using Moq;
 using NUnit.Framework;
 using TvTamer.Core;
 using TvTamer.Core.Configuration;
 using TvTamer.Core.FileSystem;
 using TvTamer.Core.Models;
-using TvTamer.Core.Persistance;
 
 namespace TvTamer.UnitTests
 {
@@ -35,7 +30,9 @@ namespace TvTamer.UnitTests
             fileSystem.Setup(fsf => fsf.GetDirectory("DownloadFolder")).Returns(source.Object);
             fileSystem.Setup(fsf => fsf.GetDirectory("TvLibFolder")).Returns(destination.Object);
 
-            var processor = new EpisodeProcessor(_settings, null, fileSystem.Object);
+            var analyticService = new Mock<IAnalyticsService>();
+
+            var processor = new EpisodeProcessor(_settings, null, fileSystem.Object, analyticService.Object);
             processor.ProcessDownloadedEpisodes();
 
             source.Verify(s => s.EnumerateFiles(It.IsAny<string>(), true), Times.AtLeastOnce);
@@ -72,7 +69,9 @@ namespace TvTamer.UnitTests
             tvService.Setup(ts => ts.GetEpisodeBySeriesName(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), true))
                 .Returns(episode);
 
-            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object);
+            var analyticService = new Mock<IAnalyticsService>();
+
+            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object, analyticService.Object);
             processor.ProcessDownloadedEpisodes();
 
             source.Verify(s => s.EnumerateFiles(It.IsAny<string>(), true), Times.AtLeastOnce);
@@ -109,15 +108,14 @@ namespace TvTamer.UnitTests
             fileSystemFactory.Setup(fsf => fsf.GetDirectory("DownloadFolder\\The.Walking.Dead.S05E12.720p.HDTV.x264-KILLERS")).Returns(sourceEpisodeFolder.Object);
 
             var tvService = new Mock<ITvService>();
+            var analyticService = new Mock<IAnalyticsService>();
 
-            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object);
+            var processor = new EpisodeProcessor(_settings, tvService.Object, fileSystemFactory.Object, analyticService.Object);
             processor.DeleteSourceFile(file);
 
             sourceEpisodeFolder.Verify(sef => sef.Delete(true), Times.Once);
-
-
-
         }
+
         private Mock<IFileSystem> GetFileSystemFactory(Mock<IDirectory> source, Mock<IDirectory> destination, Mock<IDirectory> seriesDestinationFolder, string episodeFilePath, Mock<IFile> episodeFile)
         {
             var fileSystemFactory = new Mock<IFileSystem>();

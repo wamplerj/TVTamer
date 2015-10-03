@@ -9,10 +9,11 @@ namespace TvTamer.Core.Torrents
     public class KickassSearchProvider : ISearchProvider
     {
         private readonly IWebRequester _webRequester;
+        private readonly IAnalyticsService _analyticsService;
         //TODO make ignore words configurable and global across searchproviders
         private readonly string[] _ignoreWords = {"german", "french", "core2hd", "dutch", "swedish", "reenc", "MrLss"};
 
-        public KickassSearchProvider(ISearchProvider nextProvider, IWebRequester webRequester)
+        public KickassSearchProvider(ISearchProvider nextProvider, IWebRequester webRequester, IAnalyticsService analyticsService)
         {
 
             if(nextProvider == null)
@@ -20,11 +21,13 @@ namespace TvTamer.Core.Torrents
 
             NextSearchProvider = nextProvider;
             _webRequester = webRequester;
+            _analyticsService = analyticsService;
         }
 
         public Torrent GetTorrent(string search)
         {
 
+            _analyticsService.ReportEvent(AnalyticEvent.Search, search);
             var encodedSearch = WebUtility.UrlEncode(search);
 
             //TODO Get query string from config file

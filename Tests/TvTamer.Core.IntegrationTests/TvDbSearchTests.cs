@@ -36,25 +36,5 @@ namespace TvTamer.Core.IntegrationTests
             Assert.That(season2Count, Is.EqualTo(22));
 
         }
-
-        //HACK Add New Shows until the management interface is done
-        [Ignore]
-        public void Add_New_Shows_Manager()
-        {
-            //var showsToAdd = new[] { "292124" };
-            var showsToAdd = new[] { "" };
-
-            var service = new TvDbSearchService();
-            var context = new TvContext();
-
-            foreach (var showId in showsToAdd)
-            {
-                var show = service.GetTvSeries(showId);
-                context.TvSeries.Add(show);
-            }
-
-            context.SaveChanges();
-        }
-
     }
 }

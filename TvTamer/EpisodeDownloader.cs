@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.Entity.Migrations;
+using System.Linq;
 using NLog;
 using TvTamer.Core;
 using TvTamer.Core.Configuration;
@@ -20,14 +22,16 @@ namespace TvTamer
         private readonly Logger _logger = LogManager.GetLogger("log");
         private readonly ISearchProvider _searchProvider;
         private readonly TorrentSearchSettings _settings;
+        private readonly IAnalyticsService _analyticsService;
         private readonly IWebRequester _webRequester;
 
-        public EpisodeDownloader(ITvContext context, ISearchProvider searchProvider, IWebRequester webRequester, TorrentSearchSettings settings)
+        public EpisodeDownloader(ITvContext context, ISearchProvider searchProvider, IWebRequester webRequester, TorrentSearchSettings settings, IAnalyticsService analyticsService)
         {
             _context = context;
             _searchProvider = searchProvider;
             _webRequester = webRequester;
             _settings = settings;
+            _analyticsService = analyticsService;
         }
 
         public void DownloadWantedEpisodes()
@@ -50,12 +54,12 @@ namespace TvTamer
                 if(torrent == null)
                 {
                     _logger.Info($"No torrent found for {search}");
+                    _analyticsService.ReportEvent(AnalyticEvent.SearchFailed);
                     continue;
                 }
 
                 var torrentWatchFolder = _settings.TorrentWatchFolder;
                 _webRequester.DownloadFileAsync(torrent.DownloadUrl, torrentWatchFolder + torrent.Name + ".torrent");
-
             }
 
         }

@@ -59,6 +59,7 @@
     <Compile Include="Configuration\EpisodeProcessorSettings.cs" />
     <Compile Include="Configuration\ScheduleSettings.cs" />
     <Compile Include="Configuration\TorrentSearchSettings.cs" />
+    <Compile Include="AnalyticsService.cs" />
     <Compile Include="FileSystem\FileSystem.cs" />
     <Compile Include="FileSystem\IDirectory.cs" />
     <Compile Include="FileSystem\IFile.cs" />
@@ -85,6 +86,10 @@
     <Compile Include="Migrations\201510020058544_AlternateNameIndexFix.cs" />
     <Compile Include="Migrations\201510020058544_AlternateNameIndexFix.Designer.cs">
       <DependentUpon>201510020058544_AlternateNameIndexFix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510020329124_LoggedEventUpdates.cs" />
+    <Compile Include="Migrations\201510020329124_LoggedEventUpdates.Designer.cs">
+      <DependentUpon>201510020329124_LoggedEventUpdates.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\AlternateName.cs" />
     <Compile Include="Persistance\DatabaseUpdater.cs" />
@@ -127,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510020058544_AlternateNameIndexFix.resx">
       <DependentUpon>201510020058544_AlternateNameIndexFix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510020329124_LoggedEventUpdates.resx">
+      <DependentUpon>201510020329124_LoggedEventUpdates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

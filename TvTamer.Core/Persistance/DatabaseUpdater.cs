@@ -4,6 +4,7 @@ using System.Data.Entity.Migrations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using NLog;
+using TvTamer.Core.Models;
 
 namespace TvTamer.Core.Persistance
 {
@@ -16,18 +17,21 @@ namespace TvTamer.Core.Persistance
     {
         private readonly ITvSearchService _searchService;
         private readonly ITvContext _context;
+        private readonly IAnalyticsService _analyticsService;
         private readonly Logger _logger = LogManager.GetLogger("log");
 
-        public DatabaseUpdater(ITvSearchService searchService, ITvContext context)
+        public DatabaseUpdater(ITvSearchService searchService, ITvContext context, IAnalyticsService analyticsService)
         {
             _searchService = searchService;
             _context = context;
+            _analyticsService = analyticsService;
         }
 
         public void Update()
         {
 
             _logger.Info("Updating TV Database...");
+            _analyticsService.ReportEvent(AnalyticEvent.DbUpdate);
 
             var seriesList = _context.TvSeries
                 .Where(s => SqlFunctions.DateDiff("day", s.LastUpdated, DateTime.Now) >= 7)

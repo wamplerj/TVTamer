@@ -30,8 +30,9 @@ namespace TvTamer.UnitTests
             searchProvider.Setup(sp => sp.GetTorrent(It.IsAny<string>())).Returns(torrent);
 
             var webRequester = new Mock<IWebRequester>();
+            var analyticsService = new Mock<IAnalyticsService>();
 
-            var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" });
+            var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
             downloader.DownloadWantedEpisodes();
 
             webRequester.Verify(wr => wr.DownloadFileAsync(torrent.DownloadUrl, "WatchFolder\\Torrent.torrent", null), Times.Once);
