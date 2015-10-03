@@ -4,7 +4,8 @@ branches:
   - master
   - appveyor
 configuration: Release
+platform: Any CPU
 build:
-  project: TVTamer.sln
+  project: build.proj
   publish_wap: true
   verbosity: normal
