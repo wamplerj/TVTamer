@@ -75,8 +75,8 @@ namespace TvTamer.Core
         {
 
             var query =
-                $@"SELECT TOP 1 s.Id, S.SeriesId, s.Name, s.FirstAired, s.AirsDayOfWeek, s.AirsTimeOfDay, s.Network, s.Summary, s.Status, s.Rating, s.LastUpdated FROM [dbo].[AlternateNames] an
-                   INNER JOIN TVSeries s ON s.Id = an.SeriesId WHERE s.Name = '{seriesName}'";
+                $@"SELECT TOP 1 s.Id, s.TvDbSeriesId, s.Name, s.FirstAired, s.AirsDayOfWeek, s.AirsTimeOfDay, s.Network, s.Summary, s.Status, s.Rating, s.LastUpdated FROM [dbo].[AlternateNames] an
+                   RIGHT JOIN TVSeries s ON s.Id = an.SeriesId WHERE s.Name = '{seriesName}'";
 
             if(searchByAlternateName)
                 query += $" OR an.Name = '{seriesName}'";

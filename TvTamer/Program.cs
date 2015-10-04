@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using NLog;
 using Topshelf;
 using Topshelf.Autofac;
 
@@ -8,8 +9,13 @@ namespace TvTamer
 {
     class Program
     {
+        private static readonly Logger _logger = LogManager.GetLogger("log");
+
+
         static void Main(string[] args)
         {
+
+            AppDomain.CurrentDomain.UnhandledException += (o, ea) => _logger.Fatal("Unhandled exception: {0}", ea.ExceptionObject);
 
             var builder = new ContainerBuilder();
             builder.RegisterModule(new IocModule());
