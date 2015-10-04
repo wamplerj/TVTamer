@@ -79,7 +79,7 @@ namespace TvTamer.Core
                    INNER JOIN TVSeries s ON s.Id = an.SeriesId WHERE s.Name = '{seriesName}'";
 
             if(searchByAlternateName)
-                query += " OR an.Name = '{seriesName}'";
+                query += $" OR an.Name = '{seriesName}'";
 
             _logger.Debug($"GetEpisodeBySeriesName on TVContext, SQL Query: {query}");
 
