@@ -105,8 +105,11 @@ namespace TvTamer
                 return;
             }
 
+            //            
+            var cleanEpisodeTitle = CleanFileName(foundEpisode.Title);
+
             //TODO Refactor episode file naming somewhere centralized.
-            var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {foundEpisode.Title}{sourceFile.Extension}";
+            var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {cleanEpisodeTitle}{sourceFile.Extension}";
             try
             {
                 sourceFile.Copy(destinationFilename);
@@ -124,6 +127,20 @@ namespace TvTamer
             _tvService.AddOrUpdate(foundEpisode);
             _tvService.SaveChanges();
 
+        }
+
+        private static string CleanFileName(string fileName)
+        {
+            //TODO.  Refactor Multiple replace calls into somethign that doesn't suck
+            var cleanEpisodeTitle = fileName.Replace("\\", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace("/", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace(":", "-");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace("*", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace("?", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace("<", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace(">", "");
+            cleanEpisodeTitle = cleanEpisodeTitle.Replace("|", "-");
+            return cleanEpisodeTitle;
         }
 
         public bool DestinationFileExists(TvEpisode episode)

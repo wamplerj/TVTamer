@@ -47,6 +47,10 @@ namespace TvTamer.Core
 
             var eventType = Enum.GetName(typeof (AnalyticEvent), type).ToUpper();
 
+            //TODO increase message size
+            if (message.Length > 255)
+                message = message.Substring(0, 254);
+
             _context.LoggedEvents.AddOrUpdate(new LoggedEvent() { EventTime = DateTime.Now, EventType = eventType, Message = message});
             _context.SaveChanges();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,14 +77,15 @@ namespace TvTamer.Core
 
             var query =
                 $@"SELECT TOP 1 s.Id, s.TvDbSeriesId, s.Name, s.FirstAired, s.AirsDayOfWeek, s.AirsTimeOfDay, s.Network, s.Summary, s.Status, s.Rating, s.LastUpdated FROM [dbo].[AlternateNames] an
-                   RIGHT JOIN TVSeries s ON s.Id = an.SeriesId WHERE s.Name = '{seriesName}'";
+                   RIGHT JOIN TVSeries s ON s.Id = an.SeriesId WHERE s.Name = @seriesName";
 
             if(searchByAlternateName)
-                query += $" OR an.Name = '{seriesName}'";
+                query += $" OR an.Name = @seriesName";
 
             _logger.Debug($"GetEpisodeBySeriesName on TVContext, SQL Query: {query}");
 
-            var tvSeries =  _context.Set<TvSeries>().SqlQuery(query).AsNoTracking().FirstOrDefault(); //DBSet<T>.SqlQuery is mockable
+            var seriesNameParameter = new SqlParameter("@seriesName", seriesName);
+            var tvSeries =  _context.Set<TvSeries>().SqlQuery(query, seriesNameParameter).AsNoTracking().FirstOrDefault(); //DBSet<T>.SqlQuery is mockable
 
             if (tvSeries == null)
             {

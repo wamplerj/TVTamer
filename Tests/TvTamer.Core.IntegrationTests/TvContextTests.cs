@@ -1,7 +1,4 @@
-﻿using System;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using TvTamer.Core.Persistance;
 
