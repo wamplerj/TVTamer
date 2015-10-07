@@ -30,15 +30,11 @@ namespace TvTamer.Core.UnitTests
             seriesSet.Setup(ss => ss.SqlQuery(It.IsAny<string>(), It.IsAny<object[]>()))
                             .Returns<string, object[]>((sql, param) =>
                             {
-                                // Filters by property.
-                                var filteredList = param.Length == 1
-                                    ? seriesList.Where(x => x.Name == param[0] as string)
-                                    : seriesList;
                                 var sqlQueryMock = new Mock<DbSqlQuery<TvSeries>>();
                                 sqlQueryMock.Setup(m => m.AsNoTracking())
                                     .Returns(sqlQueryMock.Object);
                                 sqlQueryMock.Setup(m => m.GetEnumerator())
-                                    .Returns(filteredList.GetEnumerator());
+                                    .Returns(seriesList.GetEnumerator());
                                 return sqlQueryMock.Object;
                             });
 
