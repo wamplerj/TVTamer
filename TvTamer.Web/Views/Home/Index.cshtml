@@ -49,32 +49,58 @@
 @section scripts
 {
     <script type="text/javascript">
-    var ctx = $("#activityChart").get(0).getContext("2d");
+        $.ajax({
+            url: "/analytics/getrecentactivity",
+            success: function(recentActivity) {
+                var chartData = {
+                    labels: recentActivity.DaysOfWeek,
+                    datasets: [
+                        {
+                            label: "Episode Search Attempts",
+                            fillColor: "rgba(151,187,205,0.5)",
+                            strokeColor: "rgba(151,187,205,0.8)",
+                            highlightFill: "rgba(151,187,205,0.75)",
+                            highlightStroke: "rgba(151,187,205,1)",
+                            data: recentActivity.SearchAttempts
+                        },
+                        {
+                            label: "Episode Search Failures",
+                            fillColor: "rgba(220,0,0,0.5)",
+                            strokeColor: "rgba(220,0,0,0.8)",
+                            highlightFill: "rgba(220,0,0,0.75)",
+                            highlightStroke: "rgba(220,0,0,1)",
+                            data: recentActivity.SearchFailures
+                        },
+                        {
+                            label: "Episode Downloads",
+                            fillColor: "rgba(242,172,22,0.5)",
+                            strokeColor: "rgba(242,172,22,0.8)",
+                            highlightFill: "rgba(242,172,22,0.75)",
+                            highlightStroke: "rgba(242,172,22,1)",
+                            data: recentActivity.EpisodeDownloads
+                        },
+                        {
+                            label: "Processed Episodes",
+                            fillColor: "rgba(79,214,88,0.5)",
+                            strokeColor: "rgba(79,214,88,0.8)",
+                            highlightFill: "rgba(79,214,88,0.75)",
+                            highlightStroke: "rgba(79,214,88,1)",
+                            data: recentActivity.ProcessedEpisodes
+                        }
+                    ]
+                };
 
-    var data = {
-    labels: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Monday"],
-    datasets: [
-        {
-            label: "Episode Search Attempts",
-            fillColor: "rgba(220,0,0,0.5)",
-            strokeColor: "rgba(220,0,0,0.8)",
-            highlightFill: "rgba(220,0,0,0.75)",
-            highlightStroke: "rgba(220,0,0,1)",
-            data: [12, 3, 15, 4, 0, 27, 16]
-        },
-        {
-            label: "Episode Downloads",
-            fillColor: "rgba(151,187,205,0.5)",
-            strokeColor: "rgba(151,187,205,0.8)",
-            highlightFill: "rgba(151,187,205,0.75)",
-            highlightStroke: "rgba(151,187,205,1)",
-            data: [6, 3, 12, 4, 0, 20, 15]
-        }
-        ]
-    };
+                var options = {
+                    multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+                };
 
-    //Chart.defaults.global.responsive = true;
 
-    var myBarChart = new Chart(ctx).Bar(data);
-</script>
+                var ctx = $("#activityChart").get(0).getContext("2d");
+                var myBarChart = new Chart(ctx).Bar(chartData, options);
+            },
+            error: function(e) {
+                alert(e);
+            }
+        });
+    </script>
 }
