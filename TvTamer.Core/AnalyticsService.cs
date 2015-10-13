@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TvTamer.Core.Models;
 using TvTamer.Core.Persistance;
 
 namespace TvTamer.Core
 {
-
     public enum AnalyticEvent
     {
         DbUpdate,
@@ -23,8 +19,45 @@ namespace TvTamer.Core
 
     public interface IAnalyticsService
     {
+        IEnumerable<Activity> GetRecentActivity();
+
+
         void ReportEvent(AnalyticEvent type);
         void ReportEvent(AnalyticEvent type, string message);
+    }
+
+    public class Activity
+    {
+        private int _processedEpisodes;
+        private int _searchAttempts;
+        private int _searchFailures;
+        private int _downloads;
+
+        public DateTime EventDay { get; set; }
+
+        public int? Downloads
+        {
+            get { return _downloads; }
+            set { _downloads = value ?? 0; }
+        }
+
+        public int? SearchAttempts
+        {
+            get { return _searchAttempts; }
+            set { _searchAttempts = value ?? 0; }
+        }
+
+        public int? SearchFailures
+        {
+            get { return _searchFailures; }
+            set { _searchFailures = value ?? 0; }
+        }
+
+        public int? ProcessedEpisodes
+        {
+            get { return _processedEpisodes; }
+            set { _processedEpisodes = value ?? 0; }
+        }
     }
 
     public class AnalyticsService : IAnalyticsService
@@ -37,6 +70,12 @@ namespace TvTamer.Core
         }
 
 
+        public IEnumerable<Activity> GetRecentActivity()
+        {
+            var recentActivity = _context.QuerySql<Activity>("[dbo].[GetRecentActivity]");
+            return recentActivity;
+        }
+
         public void ReportEvent(AnalyticEvent type)
         {
             ReportEvent(type, null);
@@ -44,17 +83,19 @@ namespace TvTamer.Core
 
         public void ReportEvent(AnalyticEvent type, string message)
         {
-
             var eventType = Enum.GetName(typeof (AnalyticEvent), type).ToUpper();
 
             //TODO increase message size
             if (!string.IsNullOrEmpty(message) && message.Length > 255)
                 message = message.Substring(0, 254);
 
-            _context.LoggedEvents.AddOrUpdate(new LoggedEvent() { EventTime = DateTime.Now, EventType = eventType, Message = message});
+            _context.LoggedEvents.AddOrUpdate(new LoggedEvent()
+            {
+                EventTime = DateTime.Now,
+                EventType = eventType,
+                Message = message
+            });
             _context.SaveChanges();
-
         }
-
     }
 }

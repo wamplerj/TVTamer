@@ -1,21 +1,39 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
+using TvTamer.Core;
 using TvTamer.Web.Models;
 
 namespace TvTamer.Web.Controllers
 {
     public class AnalyticsController : Controller
     {
+        private readonly IAnalyticsService _analyticsService;
+
+        public AnalyticsController(IAnalyticsService analyticsService)
+        {
+            _analyticsService = analyticsService;
+        }
+
         // GET: Analytics
         [HttpGet]
         public ActionResult GetRecentActivity()
         {
+            //TODO Introduce caching.  Maybe 6 hours?
+            var recentActivity = _analyticsService.GetRecentActivity().ToList();
+
+            var daysOfWeek = recentActivity.Select(ra => ra.EventDay.ToString("ddd M/d")).ToArray();
+            var episodeDownloads = recentActivity.Select(ra => (int)ra.Downloads).ToArray();
+            var searchAttempts = recentActivity.Select(ra => (int)ra.SearchAttempts).ToArray();
+            var searchFailures = recentActivity.Select(ra => (int)ra.SearchFailures).ToArray();
+            var processedEpisodes = recentActivity.Select(ra => (int)ra.ProcessedEpisodes).ToArray();
+
             var chartData = new RecentActivityChart()
             {
-                DaysOfWeek = new[] {"Tue 10/6", "Wed 10/7", "Thu 10/8", "Fri 10/9", "Sat 10/10", "Sun 10/11", "Mon 10/12"},
-                EpisodeDownloads = new[] {5, 2, 6, 3, 1, 13, 7},
-                SearchAttempts = new[] {25, 32, 64, 13, 6, 88, 32},
-                SearchFailures = new[] {20, 30, 58, 10, 5, 75, 25},
-                ProcessedEpisodes = new[] {5, 2, 6, 3, 1, 12, 7},
+                DaysOfWeek = daysOfWeek,
+                EpisodeDownloads = episodeDownloads,
+                SearchAttempts = searchAttempts,
+                SearchFailures = searchFailures,
+                ProcessedEpisodes = processedEpisodes,
             };
 
             return new JsonResult()
