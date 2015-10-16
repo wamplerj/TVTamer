@@ -28,6 +28,8 @@ namespace TvTamer.Core
 
         TvEpisode GetEpisodeBySeriesName(string seriesName, int season, int episodeNumber, bool searchByAlternateName = false);
         List<TvEpisode> GetEpisodesBySeason(int id, int lastSeason);
+        List<TvEpisode> GetEpisodesByDate(DateTime today);
+        List<TvEpisode> GetRecentlyDownloadedEpisodes();
     }
 
     public class TvService : ITvService
@@ -102,6 +104,32 @@ namespace TvTamer.Core
         public List<TvEpisode> GetEpisodesBySeason(int seriesId, int lastSeason)
         {
             return _context.TvEpisodes.Where(e => e.SeriesId == seriesId && e.Season == lastSeason).OrderBy(e => e.Season).ThenBy(e => e.EpisodeNumber).ToList();
+        }
+
+        public List<TvEpisode> GetEpisodesByDate(DateTime airDate)
+        {
+            var query = @"SELECT 
+                e.[Id] AS [Id],s.[Name] AS [SeriesName], e.[Title] AS [Title], e.[Season] AS [Season], e.[EpisodeNumber] AS [EpisodeNumber], 
+                e.[FileName] AS [FileName], e.[Summary] AS [Summary], e.[FirstAired] AS [FirstAired], e.[DownloadStatus] AS [DownloadStatus], 
+                e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
+                WHERE (DATEDIFF(day, SysDateTime(), e.[FirstAired])) = 0 AND N'WANT' = e.[DownloadStatus] ORDER BY e.[FirstAired] ASC";
+
+            var airDateParameter = new SqlParameter("@airDate", airDate);
+            var todaysEpisodes = _context.QuerySql<TvEpisode>(query, airDateParameter).ToList();
+            return todaysEpisodes;
+
+        }
+
+        public List<TvEpisode> GetRecentlyDownloadedEpisodes()
+        {
+            var query = @"SELECT TOP 6
+                e.[Id] AS [Id],s.[Name] AS [SeriesName], e.[Title] AS [Title], e.[Season] AS [Season], e.[EpisodeNumber] AS [EpisodeNumber], 
+                e.[FileName] AS [FileName], e.[Summary] AS [Summary], e.[FirstAired] AS [FirstAired], e.[DownloadStatus] AS [DownloadStatus], 
+                e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
+                WHERE N'HAVE' = e.[DownloadStatus] ORDER BY e.[FirstAired] DESC";
+
+            var recentlyDownloadedEpisodes = _context.QuerySql<TvEpisode>(query).ToList();
+            return recentlyDownloadedEpisodes;
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
+using TvTamer.Core;
 using TvTamer.Core.Models;
 using TvTamer.Core.Persistance;
 using TvTamer.Web.Models;
@@ -8,25 +10,20 @@ namespace TvTamer.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ITvContext _context;
+        private readonly ITvService _tvService;
 
-
-        public HomeController(ITvContext context)
+        public HomeController(ITvService tvService)
         {
-            _context = context;
+            _tvService = tvService;
         }
 
         public ActionResult Index()
         {
 
-            var query = @"SELECT 
-                e.[Id] AS [Id],s.[Name] AS [SeriesName], e.[Title] AS [Title], e.[Season] AS [Season], e.[EpisodeNumber] AS [EpisodeNumber], 
-                e.[FileName] AS [FileName], e.[Summary] AS [Summary], e.[FirstAired] AS [FirstAired], e.[DownloadStatus] AS [DownloadStatus], 
-                e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
-                WHERE (DATEDIFF(day, SysDateTime(), e.[FirstAired])) = 0 AND N'WANT' = e.[DownloadStatus] ORDER BY e.[FirstAired] ASC";
+            var todaysEpisodes = _tvService.GetEpisodesByDate(DateTime.Today);
+            var recentlyDownloadedEpisodes = _tvService.GetRecentlyDownloadedEpisodes();
 
-            var todaysEpisodes = _context.QuerySql<TvEpisode>(query).ToList();
-            var model = new HomeViewModel() {TodaysEpisodes = todaysEpisodes};
+            var model = new HomeViewModel() {TodaysEpisodes = todaysEpisodes, RecentlyDownloadedEpisodes = recentlyDownloadedEpisodes };
 
             return View(model);
         }

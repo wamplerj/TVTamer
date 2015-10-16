@@ -9,5 +9,6 @@ namespace TvTamer.Web.Models
     public class HomeViewModel
     {
         public List<TvEpisode> TodaysEpisodes { get; set; } = new List<TvEpisode>();
+        public List<TvEpisode> RecentlyDownloadedEpisodes { get; set; } = new List<TvEpisode>();
     }
 }

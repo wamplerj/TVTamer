@@ -16,6 +16,8 @@
     white-space: normal;
 }
 
+h2 { font-size: 20px;}
+
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
@@ -23,8 +25,8 @@ textarea {
     max-width: 280px;
 }
 
-#todays-episodes {overflow-y: auto}
-#todays-episodes li {
+.episode-list {overflow-y: auto}
+.episode-list li {
    margin-bottom: 20px;
 }
 

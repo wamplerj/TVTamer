@@ -18,7 +18,7 @@
         }
         else
         {
-            <ul id="todays-episodes">
+            <ul id="todays-episodes" class="episode-list">
                 @foreach (var episode in Model.TodaysEpisodes)
                 {
                     <li>
@@ -33,10 +33,24 @@
         }
     </div>
     <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a>
-        </p>
+        <h2>Recently Downloaded Episodes</h2>
+        @if (!Model.RecentlyDownloadedEpisodes.Any())
+        {
+            <p>No download founds.</p>
+        }
+        else
+        {
+            <ul id="recent-episodes" class="episode-list">
+                @foreach (var episode in Model.RecentlyDownloadedEpisodes)
+                {
+                    <li>
+                        <a href="/show/details/@episode.SeriesId/@episode.SeriesName.ToSlug()">@episode.SeriesName</a>
+                        (@( string.Format("S{0:D2}E{1:D2}", episode.Season, episode.EpisodeNumber) ))<br />
+                        @episode.Title
+                    </li>
+                }
+            </ul>
+        }
     </div>
     <div class="col-md-4">
         <h2>Web Hosting</h2>

@@ -16,7 +16,8 @@ namespace TvTamer.Core.Persistance
         DbSet<T> Set<T>() where T: class;
 
         List<T> QuerySql<T>(string query);
-        
+        List<T> QuerySql<T>(string query, params object[] parameters);
+
         int SaveChanges();
     }
 
@@ -36,6 +37,11 @@ namespace TvTamer.Core.Persistance
         public List<T> QuerySql<T>(string query)
         {
             return Database.SqlQuery<T>(query).ToList();
+        }
+
+        public List<T> QuerySql<T>(string query, params object[] parameters)
+        {
+            return Database.SqlQuery<T>(query, parameters).ToList();
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
