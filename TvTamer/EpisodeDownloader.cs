@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NLog;
 using TvTamer.Core;
 using TvTamer.Core.Configuration;
@@ -14,6 +15,7 @@ namespace TvTamer
     public interface IEpisodeDownloader
     {
         void DownloadWantedEpisodes();
+        string BuildSearchQuery(TvEpisode episode);
     }
 
     public class EpisodeDownloader : IEpisodeDownloader
@@ -47,8 +49,7 @@ namespace TvTamer
             foreach (var episode in episodesToDownload)
             {
 
-                //TODO Refactor this somewhere common.  TVEpisode maybe?
-                var search = $"{episode.SeriesName} s{episode.Season:D2}e{episode.EpisodeNumber:D2} 720".ToLower();
+                var search = BuildSearchQuery(episode);
                 var torrent = _searchProvider.GetTorrent(search);
 
                 if(torrent == null)
@@ -62,6 +63,14 @@ namespace TvTamer
                 _webRequester.DownloadFileAsync(torrent.DownloadUrl, torrentWatchFolder + torrent.Name + ".torrent");
             }
 
+        }
+
+        public string BuildSearchQuery(TvEpisode episode)
+        {
+            var query = $"{episode.SeriesName} s{episode.Season:D2}e{episode.EpisodeNumber:D2} 720".ToLower();
+            query = new Regex("[^a-zA-Z0-9 -]").Replace(query, "");
+
+            return query;
         }
     }
 }

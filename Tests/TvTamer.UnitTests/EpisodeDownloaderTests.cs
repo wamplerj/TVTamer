@@ -39,5 +39,21 @@ namespace TvTamer.UnitTests
         }
 
 
+        [Test]
+        public void BuildEpisodeSearchQuery()
+        {
+
+            var context = new Mock<ITvContext>();
+            var searchProvider = new Mock<ISearchProvider>();
+            var webRequester = new Mock<IWebRequester>();
+            var analyticsService = new Mock<IAnalyticsService>();
+
+            var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
+            var query = downloader.BuildSearchQuery(new TvEpisode() { SeriesName = "Some Series (2015)", Season = 1, EpisodeNumber = 1 } );
+
+            Assert.That(query, Is.EqualTo("some series 2015 s01e01 720"));
+         
+        }
+
     }
 }
