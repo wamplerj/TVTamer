@@ -67,8 +67,12 @@ namespace TvTamer
 
         public string BuildSearchQuery(TvEpisode episode)
         {
+
             var query = $"{episode.SeriesName} s{episode.Season:D2}e{episode.EpisodeNumber:D2} 720".ToLower();
+            _logger.Debug($"Search Query before stripping characters {query}");
+
             query = new Regex("[^a-zA-Z0-9 -]").Replace(query, "");
+            _logger.Debug($"Search Query after stripping characters {query}");
 
             return query;
         }
