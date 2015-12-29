@@ -12,7 +12,7 @@
     <ul>
         @foreach (var series in Model)
         {
-            <li><input type="radio" name="seriesId" value="@series.SeriesId"/>@series.Name (@series.FirstAired.ToShortDateString())</li>
+            <li><input type="radio" name="seriesId" value="@series.TvDbSeriesId"/>@series.Name (@series.FirstAired.ToShortDateString())</li>
         }
     </ul>
 
