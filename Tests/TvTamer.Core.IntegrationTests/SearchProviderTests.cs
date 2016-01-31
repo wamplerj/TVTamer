@@ -13,7 +13,7 @@ namespace TvTamer.Core.IntegrationTests
         {
             var analyticService = new Mock<IAnalyticsService>();
 
-            var searchProvider = new KickassSearchProvider(new NullSearchProvider(), new WebRequester(analyticService.Object), analyticService.Object);
+            var searchProvider = new KickassSearchProvider(new NullSearchProvider(), new WebClient(analyticService.Object), analyticService.Object);
 
             var result = searchProvider.GetTorrent("the big bang theory s01e01 720");
 

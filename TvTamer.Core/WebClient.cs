@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Xml;
 using NLog;
 
 namespace TvTamer.Core
 {
-    public interface IWebRequester
+    public interface IWebClient
     {
         XmlDocument GetXml(string url, string referer = null);
-        void DownloadFileAsync(string url, string filePath, string referer = null);
+        Task DownloadFileAsync(string url, string filePath, string referer = null);
     }
 
-    public class WebRequester : IWebRequester
+    public class WebClient : IWebClient
     {
         private readonly IAnalyticsService _analyticsService;
 
-        public WebRequester(IAnalyticsService analyticsService)
+        public WebClient(IAnalyticsService analyticsService)
         {
             _analyticsService = analyticsService;
         }
@@ -48,7 +49,7 @@ namespace TvTamer.Core
 
         }
 
-        public void DownloadFileAsync(string url, string filePath, string referer = null)
+        public async Task DownloadFileAsync(string url, string filePath, string referer = null)
         {
             var webclient = new GZipWebClient();
 
@@ -58,7 +59,7 @@ namespace TvTamer.Core
             try
             {
                 _logger.Info($"Downloading file: {url} and saving to {filePath}");
-                webclient.DownloadFileAsync(new Uri(url), filePath);
+                await webclient.DownloadFileTaskAsync(new Uri(url), filePath);
 
                 _analyticsService.ReportEvent(AnalyticEvent.Download, url);
             }
@@ -66,10 +67,11 @@ namespace TvTamer.Core
             {
                 _logger.Error(ex);
                 _analyticsService.ReportEvent(AnalyticEvent.DownloadFailed, url);
+                throw;
             }
         }
 
-        internal class GZipWebClient : WebClient
+        internal class GZipWebClient : System.Net.WebClient
         {
             protected override WebRequest GetWebRequest(Uri address)
             {

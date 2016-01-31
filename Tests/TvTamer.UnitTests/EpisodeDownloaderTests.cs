@@ -17,8 +17,8 @@ namespace TvTamer.UnitTests
         public void DownloadWantedEpisodes()
         {
 
-            var context = new Mock<ITvContext>();
-            context.Setup(c => c.QuerySql<TvEpisode>(It.IsAny<string>())).Returns(new List<TvEpisode> { new TvEpisode() { SeriesName = "SomeSeries", Season = 1, EpisodeNumber = 1 } });
+            var service = new Mock<ITvService>();
+            service.Setup(c => c.GetWantedEpisodes()).Returns(new List<TvEpisode> { new TvEpisode() { SeriesName = "SomeSeries", Season = 1, EpisodeNumber = 1 } });
 
             var torrent = new Torrent()
             {
@@ -29,11 +29,11 @@ namespace TvTamer.UnitTests
             var searchProvider = new Mock<ISearchProvider>();
             searchProvider.Setup(sp => sp.GetTorrent(It.IsAny<string>())).Returns(torrent);
 
-            var webRequester = new Mock<IWebRequester>();
+            var webRequester = new Mock<IWebClient>();
             var analyticsService = new Mock<IAnalyticsService>();
 
-            var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
-            downloader.DownloadWantedEpisodes();
+            var downloader = new EpisodeDownloader(service.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
+            downloader.DownloadWantedEpisodes().Wait();
 
             webRequester.Verify(wr => wr.DownloadFileAsync(torrent.DownloadUrl, "WatchFolder\\Torrent.torrent", null), Times.Once);
         }
@@ -43,12 +43,12 @@ namespace TvTamer.UnitTests
         public void BuildEpisodeSearchQuery()
         {
 
-            var context = new Mock<ITvContext>();
+            var service = new Mock<ITvService>();
             var searchProvider = new Mock<ISearchProvider>();
-            var webRequester = new Mock<IWebRequester>();
+            var webRequester = new Mock<IWebClient>();
             var analyticsService = new Mock<IAnalyticsService>();
 
-            var downloader = new EpisodeDownloader(context.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
+            var downloader = new EpisodeDownloader(service.Object, searchProvider.Object, webRequester.Object, new TorrentSearchSettings() { TorrentWatchFolder = "WatchFolder\\" }, analyticsService.Object);
             var query = downloader.BuildSearchQuery(new TvEpisode() { SeriesName = "Some Series (2015)", Season = 1, EpisodeNumber = 1 } );
 
             Assert.That(query, Is.EqualTo("some series 2015 s01e01 720"));

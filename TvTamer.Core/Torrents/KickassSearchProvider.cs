@@ -8,19 +8,19 @@ namespace TvTamer.Core.Torrents
 {
     public class KickassSearchProvider : ISearchProvider
     {
-        private readonly IWebRequester _webRequester;
+        private readonly IWebClient _webClient;
         private readonly IAnalyticsService _analyticsService;
         //TODO make ignore words configurable and global across searchproviders
         private readonly string[] _ignoreWords = {"german", "french", "core2hd", "dutch", "swedish", "reenc", "MrLss"};
 
-        public KickassSearchProvider(ISearchProvider nextProvider, IWebRequester webRequester, IAnalyticsService analyticsService)
+        public KickassSearchProvider(ISearchProvider nextProvider, IWebClient webClient, IAnalyticsService analyticsService)
         {
 
             if(nextProvider == null)
                 throw new ArgumentNullException(nameof(nextProvider), "nextProvider Cannot be null");
 
             NextSearchProvider = nextProvider;
-            _webRequester = webRequester;
+            _webClient = webClient;
             _analyticsService = analyticsService;
         }
 
@@ -32,7 +32,7 @@ namespace TvTamer.Core.Torrents
 
             //TODO Get query string from config file
             var url = $"https://kat.cr/usearch/{encodedSearch}/?field=seeders&sorder=desc&rss=1";
-            var xml = _webRequester.GetXml(url, "http://torcache.net");
+            var xml = _webClient.GetXml(url, "http://torcache.net");
 
             var nodes = xml?.SelectNodes("rss/channel/item");
 

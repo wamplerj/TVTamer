@@ -4,8 +4,6 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using TvTamer.Core.Models;
 using TvTamer.Core.Persistance;
@@ -24,12 +22,13 @@ namespace TvTamer.Core
         List<TvSeries> GetTvSeries(int page = 0, int pageSize = 500);
 
         List<int> GetSeasons(int seriesId);
-        
+       
 
         TvEpisode GetEpisodeBySeriesName(string seriesName, int season, int episodeNumber, bool searchByAlternateName = false);
         List<TvEpisode> GetEpisodesBySeason(int id, int lastSeason);
         List<TvEpisode> GetEpisodesByDate(DateTime today);
         List<TvEpisode> GetRecentlyDownloadedEpisodes();
+        List<TvEpisode> GetWantedEpisodes();
     }
 
     public class TvService : ITvService
@@ -130,6 +129,19 @@ namespace TvTamer.Core
 
             var recentlyDownloadedEpisodes = _context.QuerySql<TvEpisode>(query).ToList();
             return recentlyDownloadedEpisodes;
+        }
+
+        public List<TvEpisode> GetWantedEpisodes()
+        {
+
+            var query = @"SELECT 
+                e.[Id] AS [Id],s.[Name] AS [SeriesName], e.[Title] AS [Title], e.[Season] AS [Season], e.[EpisodeNumber] AS [EpisodeNumber], 
+                e.[FileName] AS [FileName], e.[Summary] AS [Summary], e.[FirstAired] AS [FirstAired], e.[DownloadStatus] AS [DownloadStatus], 
+                e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
+                WHERE (DATEDIFF(day, e.[FirstAired], SysDateTime())) >= 0 AND N'WANT' = e.[DownloadStatus] ORDER BY e.[FirstAired] ASC";
+
+            var episodesToDownload = _context.QuerySql<TvEpisode>(query).ToList();
+            return episodesToDownload;
         }
     }
 }

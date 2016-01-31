@@ -14,7 +14,7 @@ namespace TvTamer.Core.UnitTests
         public void NoEpisodeFoundReturnsNull()
         {
 
-            var webRequestor = new Mock<IWebRequester>();
+            var webRequestor = new Mock<IWebClient>();
             webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), null)).Returns(new XmlDocument());
 
             var analyticService = new Mock<IAnalyticsService>();
@@ -49,7 +49,7 @@ namespace TvTamer.Core.UnitTests
 
             var analyticService = new Mock<IAnalyticsService>();
 
-            var webRequestor = new Mock<IWebRequester>();
+            var webRequestor = new Mock<IWebClient>();
             webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), It.IsAny<string>())).Returns(document);
 
             var nullSearchProvider = new NullSearchProvider();
@@ -82,7 +82,7 @@ namespace TvTamer.Core.UnitTests
             var document = new XmlDocument();
             document.LoadXml(xml);
 
-            var webRequestor = new Mock<IWebRequester>();
+            var webRequestor = new Mock<IWebClient>();
             webRequestor.Setup(wr => wr.GetXml(It.IsAny<string>(), It.IsAny<string>())).Returns(document);
 
             var analyticService = new Mock<IAnalyticsService>();

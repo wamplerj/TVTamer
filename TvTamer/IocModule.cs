@@ -23,7 +23,7 @@ namespace TvTamer
             builder.RegisterType<TvDbSearchService>().As<ITvSearchService>();
             builder.RegisterType<DatabaseUpdater>().As<IDatabaseUpdater>();
             builder.RegisterType<EpisodeDownloader>().As<IEpisodeDownloader>();
-            builder.RegisterType<WebRequester>().As<IWebRequester>();
+            builder.RegisterType<WebClient>().As<IWebClient>();
             builder.RegisterType<TvContext>().As<ITvContext>();
             builder.RegisterType<TvService>().As<ITvService>();
             builder.RegisterType<FileSystem>().As<IFileSystem>();
@@ -34,7 +34,7 @@ namespace TvTamer
             //Search Provider Registration
             builder.RegisterType<NullSearchProvider>().Named<ISearchProvider>("searchProvider");
 
-            builder.RegisterDecorator<ISearchProvider>((c, inner) => new KickassSearchProvider(inner, c.Resolve<IWebRequester>(), c.Resolve<IAnalyticsService>()),
+            builder.RegisterDecorator<ISearchProvider>((c, inner) => new KickassSearchProvider(inner, c.Resolve<IWebClient>(), c.Resolve<IAnalyticsService>()),
                 fromKey: "searchProvider");
 
             builder.RegisterType<TvTamerService>();

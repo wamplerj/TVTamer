@@ -73,7 +73,7 @@ namespace TvTamer.Core
 
             TvSeries tvSeries = null;
 
-            var client = new WebClient();
+            var client = new System.Net.WebClient();
             client.DownloadFile(url, temporaryFilePath);
 
             if (!File.Exists(temporaryFilePath)) return tvSeries;

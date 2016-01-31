@@ -73,10 +73,7 @@ namespace TvTamer.Core.Persistance
 
                     if (currentEpisode == null )
                     {
-
-                        if (episode.Season > 0 && episode.EpisodeNumber > 0)
-                            episode.DownloadStatus = "WANT";
-
+                        episode.DownloadStatus = (episode.Season > 0 && episode.EpisodeNumber > 0) ? "WANT" : "SKIP";
                         currentSeries.Episodes.Add(episode);
                         continue;
                     }
@@ -84,7 +81,8 @@ namespace TvTamer.Core.Persistance
                     currentEpisode.FirstAired = episode.FirstAired;
                     currentEpisode.Summary = episode.Summary;
                     currentEpisode.Title = episode.Title;
-                   
+                    currentEpisode.DownloadStatus = episode.DownloadStatus;
+
                 }
 
                 _context.TvSeries.AddOrUpdate(t => t.TvDbSeriesId, currentSeries);

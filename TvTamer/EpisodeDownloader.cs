@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
-using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using NLog;
 using TvTamer.Core;
 using TvTamer.Core.Configuration;
 using TvTamer.Core.Models;
-using TvTamer.Core.Persistance;
 using TvTamer.Core.Torrents;
 
 namespace TvTamer
@@ -14,37 +13,32 @@ namespace TvTamer
 
     public interface IEpisodeDownloader
     {
-        void DownloadWantedEpisodes();
+        Task DownloadWantedEpisodes();
         string BuildSearchQuery(TvEpisode episode);
     }
 
     public class EpisodeDownloader : IEpisodeDownloader
     {
-        private readonly ITvContext _context;
+        private readonly ITvService _service;
         private readonly Logger _logger = LogManager.GetLogger("log");
         private readonly ISearchProvider _searchProvider;
         private readonly TorrentSearchSettings _settings;
         private readonly IAnalyticsService _analyticsService;
-        private readonly IWebRequester _webRequester;
+        private readonly IWebClient _webClient;
 
-        public EpisodeDownloader(ITvContext context, ISearchProvider searchProvider, IWebRequester webRequester, TorrentSearchSettings settings, IAnalyticsService analyticsService)
+        public EpisodeDownloader(ITvService service, ISearchProvider searchProvider, IWebClient webClient, TorrentSearchSettings settings, IAnalyticsService analyticsService)
         {
-            _context = context;
+            _service = service;
             _searchProvider = searchProvider;
-            _webRequester = webRequester;
+            _webClient = webClient;
             _settings = settings;
             _analyticsService = analyticsService;
         }
 
-        public void DownloadWantedEpisodes()
+        public async Task DownloadWantedEpisodes()
         {
-            var query = @"SELECT 
-                e.[Id] AS [Id],s.[Name] AS [SeriesName], e.[Title] AS [Title], e.[Season] AS [Season], e.[EpisodeNumber] AS [EpisodeNumber], 
-                e.[FileName] AS [FileName], e.[Summary] AS [Summary], e.[FirstAired] AS [FirstAired], e.[DownloadStatus] AS [DownloadStatus], 
-                e.[SeriesId] AS [SeriesId] FROM [dbo].[TvEpisodes] AS e	INNER JOIN [dbo].[TvSeries] s ON s.Id = e.SeriesId
-                WHERE (DATEDIFF(day, e.[FirstAired], SysDateTime())) >= 0 AND N'WANT' = e.[DownloadStatus] ORDER BY e.[FirstAired] ASC";
 
-            var episodesToDownload = _context.QuerySql<TvEpisode>(query).ToList();
+            var episodesToDownload = _service.GetWantedEpisodes();
 
             foreach (var episode in episodesToDownload)
             {
@@ -59,10 +53,22 @@ namespace TvTamer
                     continue;
                 }
 
-                var torrentWatchFolder = _settings.TorrentWatchFolder;
-                _webRequester.DownloadFileAsync(torrent.DownloadUrl, torrentWatchFolder + torrent.Name + ".torrent");
-            }
+                try
+                {
+                    var torrentFileName = $"{_settings.TorrentWatchFolder}{torrent.Name}.torrent";
+                    await _webClient.DownloadFileAsync(torrent.DownloadUrl, torrentFileName);
 
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex);
+                }
+
+                episode.DownloadStatus = "DOWN";
+                _service.AddOrUpdate(episode);
+
+            }
+            _service.SaveChanges();
         }
 
         public string BuildSearchQuery(TvEpisode episode)
