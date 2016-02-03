@@ -25,13 +25,6 @@ namespace TvTamer.Core.Configuration
             set { this["tvLibraryFolder"] = value; }
         }
 
-        [ConfigurationProperty("dryRun", IsRequired = false, DefaultValue = false)]
-        public bool DryRun
-        {
-            get { return (bool)this["dryRun"]; }
-            set { this["dryRun"] = value; }
-        }
-
         [ConfigurationProperty("fileExtentions", IsRequired = true)]
         public string FileExtentions
         {

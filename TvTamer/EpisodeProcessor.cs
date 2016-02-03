@@ -51,9 +51,6 @@ namespace TvTamer
 
         public void ProcessDownloadedEpisodes()
         {
-            if (_settings.DryRun) _logger.Info("DryRun = true");
-
-            //Get the List of Files in the Download folder that match and don't match 
             var episodesToProcess = GetTvEpisodesFiles();
 
             ProcessMatchedEpisodes(episodesToProcess.MatchedEpisodes);
@@ -94,6 +91,8 @@ namespace TvTamer
 
         public void ProcessMatchedEpisodes(List<TvEpisode> matchedEpisodes)
         {
+
+            if (!matchedEpisodes.Any()) return;
 
             foreach (var episode in matchedEpisodes)
             {
