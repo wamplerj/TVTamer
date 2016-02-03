@@ -61,8 +61,6 @@
     <Compile Include="Configuration\TorrentSearchSettings.cs" />
     <Compile Include="AnalyticsService.cs" />
     <Compile Include="FileSystem\FileSystem.cs" />
-    <Compile Include="FileSystem\IDirectory.cs" />
-    <Compile Include="FileSystem\IFile.cs" />
     <Compile Include="Migrations\201505072222346_InitialCreate.cs" />
     <Compile Include="Migrations\201505072222346_InitialCreate.Designer.cs">
       <DependentUpon>201505072222346_InitialCreate.cs</DependentUpon>
@@ -108,7 +106,7 @@
     <Compile Include="Torrents\NullSearchProvider.cs" />
     <Compile Include="Torrents\ThePirateBaySearchProvider.cs" />
     <Compile Include="Torrents\Torrent.cs" />
-    <Compile Include="TvEpisodeFilter.cs" />
+    <Compile Include="TvEpisodeFileMatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TvDbSearchService.cs" />
     <Compile Include="TvService.cs" />

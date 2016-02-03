@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NLog;
@@ -66,8 +65,10 @@ namespace TvTamer
 
                 episode.DownloadStatus = "DOWN";
                 _service.AddOrUpdate(episode);
+                _logger.Debug($"Updating {episode.SeriesName} s{episode.Season:D2}e{episode.EpisodeNumber:D2} as Downloaded");
 
             }
+
             _service.SaveChanges();
         }
 

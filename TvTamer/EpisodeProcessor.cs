@@ -13,10 +13,17 @@ namespace TvTamer
     public interface IEpisodeProcessor
     {
         void ProcessDownloadedEpisodes();
-        IEnumerable<TvEpisode> GetTvEpisodeFiles();
+        EpisodeProcessResult GetTvEpisodesFiles();
         bool DestinationFileExists(TvEpisode episode);
         void DeleteSourceFile(string filePath);
     }
+
+    public class EpisodeProcessResult
+    {
+        public List<TvEpisode> MatchedEpisodes { get; set; } = new List<TvEpisode>();
+        public List<TvEpisodeFile> UnmatchedEpisodes { get; set; } = new List<TvEpisodeFile>();
+    }
+    
 
     public class EpisodeProcessor : IEpisodeProcessor
     {
@@ -46,88 +53,95 @@ namespace TvTamer
         {
             if (_settings.DryRun) _logger.Info("DryRun = true");
 
-            var episodes = GetTvEpisodeFiles().ToList();
+            //Get the List of Files in the Download folder that match and don't match 
+            var episodesToProcess = GetTvEpisodesFiles();
 
-            if (!episodes.Any())
-            {
-                _logger.Info("No Downloaded episodes found to process");
-                return;
-            }
-
-            LogFileInformation(episodes.Select(e => e.FileName).ToList(), "Found {0} files in {1}");
-
-            foreach (var episode in episodes)
-            {
-                if (!DestinationFileExists(episode))
-                {
-                    CopyEpisodeToDestination(episode);
-                }
-
-                DeleteSourceFile(episode.FileName);
-            }
+            ProcessMatchedEpisodes(episodesToProcess.MatchedEpisodes);
+            ProcessUnmatchedEpisodes(episodesToProcess.UnmatchedEpisodes);
         }
 
-        private void LogFileInformation(List<string> files, string message)
+        public EpisodeProcessResult GetTvEpisodesFiles()
         {
-            _logger.Info("\r\n\r\nDeleted {0} files from {1}", files.Count(), _sourceFolder.Path);
-            _logger.Info("===========================================================================");
+            var result = new EpisodeProcessResult();
 
-            foreach (var file in files)
-            {
-                var fileName = file.Substring(_sourceFolder.Path.Length);
-                if (fileName.Length > 70)
-                {
-                    var parts = fileName.Split('\\');
-                    fileName = parts.Last();
-                }
-                _logger.Info(fileName);
-            }
-        }
-
-        public IEnumerable<TvEpisode> GetTvEpisodeFiles()
-        {
             var files = _sourceFolder.EnumerateFiles("*", true)
                 .Where(f => _settings.FileExtentions.Contains(new File(f).Extension.ToLower()) && !f.Contains("sample"));
-            return TvEpisodeFilter.GetEpisodes(files);
+
+            var episodeFiles = TvEpisodeFileMatcher.GetTvEpisodesFiles(files);
+            if (!episodeFiles.Any())
+            {
+                _logger.Info("No Downloaded episodes found to process");
+                return result;
+            }
+
+            foreach (var file in episodeFiles)
+            {
+                var episode = _tvService.GetEpisodeBySeriesName(file.SeriesName, file.Season, file.EpisodeNumber, true);
+
+                if (episode != null)
+                {
+                    episode.FileName = file.FileName;
+                    result.MatchedEpisodes.Add(episode);
+                    continue;
+                }
+
+                _logger.Info($"Could not find Season: {file.Season} Episode: {file.EpisodeNumber} of Series: {file.SeriesName} in database");
+                result.UnmatchedEpisodes.Add(file);
+            }
+
+            return result;
         }
 
-        private void CopyEpisodeToDestination(TvEpisode episode)
+        public void ProcessMatchedEpisodes(List<TvEpisode> matchedEpisodes)
         {
 
-            var sourceFile = _fileSystem.GetFile(episode.FileName);
-
-            var foundEpisode = _tvService.GetEpisodeBySeriesName(episode.SeriesName, episode.Season,
-                episode.EpisodeNumber, true);
-
-            if (foundEpisode == null)
+            foreach (var episode in matchedEpisodes)
             {
-                _logger.Info($"Could not find Season: {episode.Season} Episode: {episode.EpisodeNumber} of Series: {episode.SeriesName} in database");
-                return;
+                var cleanEpisodeTitle = CleanFileName(episode.Title);
+                var sourceFile = _fileSystem.GetFile(episode.FileName);
+
+                //TODO Refactor episode file naming somewhere centralized.
+                var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {cleanEpisodeTitle}{sourceFile.Extension}";
+
+                if (!DestinationFileExists(episode))
+                {
+                    _logger.Info($"Skipped copying File {sourceFile} to {destinationFilename}.  Destination file already exists");
+                    DeleteSourceFile(episode.FileName);
+                    continue;
+                }
+
+                try
+                {
+                    sourceFile.Copy(destinationFilename);
+
+                    _logger.Info($"Copying {sourceFile} to {destinationFilename}");
+                    _analyticsService.ReportEvent(AnalyticEvent.Episode, $"Copying {sourceFile} to {destinationFilename}");
+                }
+                catch (Exception ex)
+                {
+                    _analyticsService.ReportEvent(AnalyticEvent.EpisodeFailed, $"Unable to copy {sourceFile} to {destinationFilename}");
+                    _logger.Error(ex);
+                }
+
+                episode.FileName = destinationFilename;
+                episode.DownloadStatus = "HAVE";
+
+                _tvService.AddOrUpdate(episode);
             }
 
-            //            
-            var cleanEpisodeTitle = CleanFileName(foundEpisode.Title);
-
-            //TODO Refactor episode file naming somewhere centralized.
-            var destinationFilename = $"{_destinationFolder.Path}\\{episode.SeriesName}\\Season {episode.Season:D2}\\S{episode.Season:D2}E{episode.EpisodeNumber:D2} - {cleanEpisodeTitle}{sourceFile.Extension}";
-            try
-            {
-                sourceFile.Copy(destinationFilename);
-            }
-            catch (Exception ex)
-            {
-                _analyticsService.ReportEvent(AnalyticEvent.EpisodeFailed, $"Unable to copy {sourceFile} to {destinationFilename}");
-            }
-            _logger.Info($"Copying {sourceFile} to {destinationFilename}");
-            _analyticsService.ReportEvent(AnalyticEvent.Episode, $"Copying {sourceFile} to {destinationFilename}");
-
-            foundEpisode.FileName = destinationFilename;
-            foundEpisode.DownloadStatus = "HAVE";
-
-            _tvService.AddOrUpdate(foundEpisode);
             _tvService.SaveChanges();
-
         }
+
+        public void ProcessUnmatchedEpisodes(List<TvEpisodeFile> ummatchedEpisodes)
+        {
+            if (!_settings.DeleteUnmatchedEpisodes) return;
+
+            foreach (var file in ummatchedEpisodes)
+            {
+                DeleteSourceFile(file.FileName);
+            }
+        }
+
 
         private static string CleanFileName(string fileName)
         {
@@ -161,9 +175,9 @@ namespace TvTamer
             var file = _fileSystem.GetFile(filePath);
             if (file.DirectoryName == _sourceFolder.Path)
             {
-                if (!_settings.DryRun)
-                    file.Delete();
+                if (!_settings.DeleteUnmatchedEpisodes) return;
 
+                file.Delete();
                 _logger.Info("Deleted file from source at: {0}\r\n", filePath);
             }
             else
@@ -173,9 +187,12 @@ namespace TvTamer
 
                 if (!rootFolder.Exists()) return;
 
-                if(!_settings.DryRun)
-                    rootFolder.Delete(true);
+                //TODO Prevent deleting folder if multiple processable items are contained within it
+                //https://trello.com/c/gSD5ido6
 
+                if (!_settings.DeleteUnmatchedEpisodes) return;
+
+                rootFolder.Delete(true);
                 _logger.Info("Deleted folder from source at: {0}\r\n", rootFolder.Path);
             }
         }

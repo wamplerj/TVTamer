@@ -36,6 +36,8 @@ namespace TvTamer.UnitTests
             downloader.DownloadWantedEpisodes().Wait();
 
             webRequester.Verify(wr => wr.DownloadFileAsync(torrent.DownloadUrl, "WatchFolder\\Torrent.torrent", null), Times.Once);
+            service.Verify(s => s.AddOrUpdate(It.IsAny<TvEpisode>()), Times.AtLeastOnce);
+            service.Verify(s => s.SaveChanges(), Times.Once);
         }
 
 

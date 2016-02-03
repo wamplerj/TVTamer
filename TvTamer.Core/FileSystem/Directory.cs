@@ -9,6 +9,16 @@ using NLog.Common;
 
 namespace TvTamer.Core.FileSystem
 {
+    public interface IDirectory
+    {
+        string Path { get; }
+
+        void Delete(bool recursive = false);
+        IEnumerable<string> EnumerateFiles(string searchPattern, bool recursive = false);
+        bool Exists();
+        string ToString();
+    }
+
     public class Directory : IDirectory
     {
         private readonly string _folder;

@@ -8,6 +8,16 @@ using NLog;
 
 namespace TvTamer.Core.FileSystem
 {
+    public interface IFile
+    {
+        string DirectoryName { get; }
+        string Extension { get; }
+
+        void Copy(string destinationFilename);
+        void Delete();
+        string ToString();
+    }
+
     public class File : IFile
     {
         private readonly string _filePath;
@@ -73,4 +83,16 @@ namespace TvTamer.Core.FileSystem
             }
         }
     }
+
+    public class TvEpisodeFile : File
+    {
+        public TvEpisodeFile(string filePath) : base(filePath) {}
+
+
+        public int EpisodeNumber { get; set; }
+        public int Season { get; set; }
+        public string SeriesName { get; set; }
+        public string FileName { get; set; }
+    }
+
 }

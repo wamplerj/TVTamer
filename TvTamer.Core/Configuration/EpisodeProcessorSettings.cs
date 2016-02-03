@@ -42,5 +42,12 @@ namespace TvTamer.Core.Configuration
             set { this["fileExtentions"] = value; }
         }
 
+        [ConfigurationProperty("deleteUnmatchedEpisodes", DefaultValue = false)]
+        public bool DeleteUnmatchedEpisodes
+        {
+            get { return (bool)this["deleteUnmatchedEpisodes"]; }
+            set { this["deleteUnmatchedEpisodes"] = value; }
+        }
+
     }
 }

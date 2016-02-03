@@ -11,7 +11,7 @@ namespace TvTamer.Core.Torrents
         private readonly IWebClient _webClient;
         private readonly IAnalyticsService _analyticsService;
         //TODO make ignore words configurable and global across searchproviders
-        private readonly string[] _ignoreWords = {"german", "french", "core2hd", "dutch", "swedish", "reenc", "MrLss"};
+        private readonly string[] _ignoreWords = {"german", "french", "core2hd", "dutch", "swedish", "reenc", "MrLss", "Lucifer22", "ITA"};
 
         public KickassSearchProvider(ISearchProvider nextProvider, IWebClient webClient, IAnalyticsService analyticsService)
         {
